@@ -1,0 +1,16 @@
+{
+  "name": "schema-validator",
+  "version": "0.1.0",
+  "description": "Javascript schema validator for objects",
+  "main": "src/index.js",
+  "repository": "https://github.com/samuelgozi/schema-validator",
+  "author": "Samuel Elgozi <samu.elgozi@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "jest": "^23.6.0"
+  }
+}
