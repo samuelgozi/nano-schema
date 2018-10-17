@@ -17,6 +17,7 @@ test('Only strings pass the "test" method', () => {
 
 test('Required method returns false on empty values', () => {
 	expect(stringValidator.required('')).toEqual(false);
+	expect(stringValidator.required(null)).toEqual(false);
 	expect(stringValidator.required(undefined)).toEqual(false);
 });
 
@@ -29,6 +30,18 @@ test('When enum is provided only allowed strings should pass', () => {
 
 	// should fail
 	expect(stringValidator.enum('four', options)).toEqual(false);
+});
+
+test('All the options inside the the enum are of the correct type', () => {
+	const schema = {
+		enum: ['one', 2, 'three']
+	};
+
+	function validateSchema() {
+		stringValidator.validateSchema(schema);
+	}
+
+	expect(validateSchema).toThrow();
 });
 
 test('Schema validator with unknown props throws', () => {

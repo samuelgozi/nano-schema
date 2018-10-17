@@ -1,6 +1,6 @@
 module.exports = {
 	validateType(value) {
-		return typeof value === 'string';
+		return typeof value === 'number' && !Number.isNaN(value);
 	},
 
 	validateSchema(schemaObject) {
@@ -35,10 +35,6 @@ module.exports = {
 				}
 			}
 		}
-	},
-
-	required(value) {
-		return this.validateType(value) && value !== '';
 	},
 
 	enum(value, options) {
