@@ -1,6 +1,6 @@
 const arrayValidator = require('../../src/types/array');
 
-test('Only booleans pass the "validateType" method', () => {
+test('Only arrays pass the "validateType" method', () => {
 	// Should pass
 	expect(arrayValidator.validateType([])).toEqual(true);
 
