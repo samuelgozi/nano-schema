@@ -4,7 +4,7 @@ module.exports = {
 	},
 
 	validateSchema(schemaObject) {
-		const allowedProps = ['type', 'required'];
+		const allowedProps = ['type', 'required', 'child'];
 
 		for (let prop in schemaObject) {
 			// Check if the property is allowed.

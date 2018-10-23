@@ -17,14 +17,16 @@ test('Only numbers pass the "validateType" method', () => {
 
 test('All the options inside the the enum are of the correct type', () => {
 	const schema = {
-		enum: [1, '2', 3]
+		enum: [1, NaN, 3]
 	};
 
 	function validateSchema() {
 		numberValidator.validateSchema(schema);
 	}
 
-	expect(validateSchema).toThrow();
+	expect(validateSchema).toThrow(
+		'All the options inside the enum should be of the correct type'
+	);
 });
 
 test('When enum is provided only allowed options should pass', () => {
