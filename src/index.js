@@ -42,18 +42,21 @@ class Schema {
 	/*
 	 * Valdidates a given object against the schema.
 	 */
-	validate(object, schema = this.__schema) {
+	validate(object, schema = this.__schema, fieldParent) {
 		// Used to track which props were validated.
 		const objectProps = new Set(Object.keys(object));
 
 		// Loop over the keys in the schema(on it the object to validate).
 		for (const fieldName in schema) {
 			const fieldValue = object[fieldName];
-			const schemaField = schema[fieldName];
-			const validator = validators.get(schemaField.type);
+			const fieldSchema = schema[fieldName];
+			const validator = validators.get(fieldSchema.type);
+			// Full path to the field, needed for easied debugging of nested schemas.
+			const fieldPath =
+				fieldParent !== undefined ? fieldParent + '.' + fieldName : fieldName;
 
 			// If the field is required, validate that its not empty.
-			if (schemaField.required === true) {
+			if (fieldSchema.required === true) {
 				// If the schema validator provided a specific
 				// method for checking required fields, then use it.
 				const validateRequired =
@@ -65,19 +68,33 @@ class Schema {
 				const fieldIsEmpty = !validateRequired.call(validator, fieldValue);
 
 				if (fieldIsEmpty) {
-					throw Error(`The field "${fieldName}" is required`);
+					throw Error(`The field "${fieldPath}" is required`);
 				}
 			}
 
 			// Check the the value matches an 'enum' when enum is declared.
-			if (schemaField.enum !== undefined) {
-				if (!schemaField.enum.includes(fieldValue)) {
+			if (fieldSchema.enum !== undefined) {
+				if (!fieldSchema.enum.includes(fieldValue)) {
 					throw Error(
-						`The field "${fieldName}" can only be one of: ${schemaField.enum.join(
+						`The field "${fieldPath}" can only be one of: ${fieldSchema.enum.join(
 							', '
 						)}`
 					);
 				}
+			}
+
+			// If the field is not empty, then validate its type.
+			if (fieldValue !== undefined) {
+				const isValid = validator.validateType(fieldValue);
+
+				if (!isValid) {
+					throw Error(`The field "${fieldPath}" is not of the correct type`);
+				}
+			}
+
+			// If the field is an object then recursively run the validator on it.
+			if (fieldSchema.type === Object) {
+				this.validate(fieldValue, fieldSchema.child, fieldName);
 			}
 
 			// Remove the prop from the list of properties left in the object.
@@ -87,8 +104,17 @@ class Schema {
 		// If there are still props in the list of properties checked
 		// it means that the object has props that were not specified in the schema.
 		if (objectProps.size > 0) {
-			const invalidProps = Array.from(objectProps).join(', ');
-			throw Error('The object contains invalid properties: ' + invalidProps);
+			let invalidProps = Array.from(objectProps);
+
+			// If this is a recursive call, then we append the
+			// parent field name to the prop to make it easier to debug.
+			if (fieldParent !== undefined) {
+				invalidProps = invalidProps.map(prop => fieldParent + '.' + prop);
+			}
+
+			throw Error(
+				'The object contains invalid properties: ' + invalidProps.join(', ')
+			);
 		}
 	}
 }

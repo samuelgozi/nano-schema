@@ -91,6 +91,58 @@ describe('Throws when creating a schema with invalid field options', () => {
 	});
 });
 
+describe('Throws when the type of the property is not correct', () => {
+	test('String', () => {
+		function testSchema() {
+			const schema = new Schema({
+				name: {
+					type: String
+				}
+			});
+
+			schema.validate({
+				name: 42
+			});
+		}
+
+		expect(testSchema).toThrow('The field "name" is not of the correct type');
+	});
+
+	test('Number', () => {
+		function testSchema() {
+			const schema = new Schema({
+				age: {
+					type: Number
+				}
+			});
+
+			schema.validate({
+				age: 'Forty Two'
+			});
+		}
+
+		expect(testSchema).toThrow('The field "age" is not of the correct type');
+	});
+
+	test('Boolean', () => {
+		function testSchema() {
+			const schema = new Schema({
+				likesPancakes: {
+					type: Boolean
+				}
+			});
+
+			schema.validate({
+				likesPancakes: 'Of course!'
+			});
+		}
+
+		expect(testSchema).toThrow(
+			'The field "likesPancakes" is not of the correct type'
+		);
+	});
+});
+
 test("Throw's when a required field is empty", () => {
 	function createNewSchema() {
 		const schema = new Schema({
@@ -169,6 +221,33 @@ describe("Throw when 'enum' is specified, but the value isn't any of the allowed
 
 		expect(createNewSchema).toThrow(
 			'The field "favoriteNumber" can only be one of: 42, 84'
+		);
+	});
+});
+
+describe('Nested schemas', () => {
+	test("Throws when the nested object doens't match the schema", () => {
+		function createNewSchema() {
+			const schema = new Schema({
+				address: {
+					type: Object,
+					child: {
+						city: {
+							type: String
+						}
+					}
+				}
+			});
+
+			schema.validate({
+				address: {
+					city: 42
+				}
+			});
+		}
+
+		expect(createNewSchema).toThrow(
+			'The field "address.city" is not of the correct type'
 		);
 	});
 });
