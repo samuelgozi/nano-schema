@@ -44,14 +44,20 @@ describe('Creating a schema with correct syntax', () => {
 		expect(createNewSchema).not.toThrow();
 	});
 
+	test('Short schema syntax with primitive types', () => {
+		const schemaObject = {
+			name: String,
+			age: Number,
+			married: Boolean,
+			birthdate: Date
+		};
 
-test('Throws when creating a schema with anything other than an object', () => {
-	function createNewSchema() {
-		new Schema(() => {});
-	}
+		function createNewSchema() {
+			new Schema(schemaObject);
+		}
 
-	expect(createNewSchema).toThrow('Schema must be an object');
-});
+		expect(createNewSchema).not.toThrow();
+	});
 
 	test('Verbose array schema syntax', () => {
 		const schemaObject = {
@@ -66,6 +72,18 @@ test('Throws when creating a schema with anything other than an object', () => {
 					}
 				]
 			}
+		};
+
+		function createNewSchema() {
+			new Schema(schemaObject);
+		}
+
+		expect(createNewSchema).not.toThrow();
+	});
+
+	test('Short array schema syntax', () => {
+		const schemaObject = {
+			arrayOfStuff: [String, Number]
 		};
 
 		function createNewSchema() {

@@ -20,27 +20,61 @@ class Schema {
 		if (Object.prototype.toString.call(schema) !== '[object Object]')
 			throw Error('Schema must be an object');
 
-		// Validate that the schema is formatted correctly.
-		this.validateSchema(schema);
+		// Validate that the schema is formatted correctly
+		// and compile shortcuts into the verbose syntax.
+		const compiledSchema = this.compileSchema(schema);
 
 		// Save it for reference.
-		this.__schema = schema;
+		this.__schema = compiledSchema;
 	}
 
 	/*
-	 * Validates that a schema is formatted correctly.
+	 * Compile short schema syntax into verbose one.
 	 */
-	validateSchema(schema = this.__schema) {
+	compileSchemaField(fieldSchema) {
+		// Check if the prop is using the shortcut syntax, if it is
+		// then replace it with a schema that uses the verbose syntax.
+		// This check only works for "primitive" types.
+		if (validators.has(fieldSchema)) {
+			return { type: fieldSchema };
+		}
+
+		// Check if the value uses a short syntax for the
+		// Array schema, if it is then replace it with the verbose syntax.
+		if (Array.isArray(fieldSchema)) {
+			return {
+				type: Array,
+				child: fieldSchema.map(subFieldSchema => {
+					return this.compileSchemaField(subFieldSchema);
+				})
+			};
+		}
+
+		// Lastly, if its not a shortcut, return it as it is.
+		return fieldSchema;
+	}
+
+	/*
+	 * Validates that a schema is formatted correctly
+	 * and compiles shortcuts into the verbose syntax.
+	 */
+	compileSchema(schema = this.__schema) {
+		const compiledSchema = {};
+
 		for (const fieldName in schema) {
-			const prop = schema[fieldName];
-			const typeValidator = validators.get(prop.type);
+			const compiledField = this.compileSchemaField(schema[fieldName]);
+			const typeValidator = validators.get(compiledField.type);
 
 			if (typeValidator === undefined) {
 				throw Error(`Invalid type for the field "${fieldName}"`);
 			}
 
-			typeValidator.validateSchema(prop);
+			typeValidator.validateSchema(compiledField);
+
+			compiledSchema[fieldName] = compiledField;
 		}
+
+		return compiledSchema;
 	}
 
 	/*
