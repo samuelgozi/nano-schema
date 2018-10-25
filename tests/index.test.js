@@ -92,6 +92,21 @@ describe('Creating a schema with correct syntax', () => {
 
 		expect(createNewSchema).not.toThrow();
 	});
+
+	test('Short object schema syntax', () => {
+		const schemaObject = {
+			personalInfoWeStole: {
+				address: String,
+				phone: Number
+			}
+		};
+
+		function createNewSchema() {
+			new Schema(schemaObject);
+		}
+
+		expect(createNewSchema).not.toThrow();
+	});
 });
 
 describe('Creating a schema with incorrect syntax', () => {
@@ -126,6 +141,37 @@ describe('Creating a schema with incorrect syntax', () => {
 		}
 
 		expect(createNewSchema).toThrow('Invalid type for the field "imVeryCool"');
+	});
+
+	test('Short array schema syntax', () => {
+		const schemaObject = {
+			arrayOfStuff: ["This shoulden't work!"]
+		};
+
+		function createNewSchema() {
+			new Schema(schemaObject);
+		}
+
+		expect(createNewSchema).toThrow(
+			'Invalid type for the field "arrayOfStuff[0]"'
+		);
+	});
+
+	test('Short object schema syntax', () => {
+		const schemaObject = {
+			personalInfoWeStole: {
+				address: "This shoulden't work!",
+				phone: Number
+			}
+		};
+
+		function createNewSchema() {
+			new Schema(schemaObject);
+		}
+
+		expect(createNewSchema).toThrow(
+			'Invalid type for the field "personalInfoWeStole.address"'
+		);
 	});
 });
 
@@ -171,9 +217,81 @@ describe('Validating objects that match the schema', () => {
 
 		expect(createNewSchema).not.toThrow();
 	});
+
+	test('Correct values in verbose array schema', () => {
+		const arraySchema = new Schema({
+			arrayOfStuff: {
+				type: Array,
+				child: [
+					{
+						type: String
+					},
+					{
+						type: Number
+					}
+				]
+			}
+		});
+
+		function validateArrayWithString() {
+			arraySchema.validate({
+				arrayOfStuff: ['Hi there!']
+			});
+		}
+
+		function validateArrayWithNumber() {
+			arraySchema.validate({
+				arrayOfStuff: [42]
+			});
+		}
+
+		function validateArrayWithBoth() {
+			arraySchema.validate({
+				arrayOfStuff: ['Hi there!', 42]
+			});
+		}
+
+		expect(validateArrayWithString).not.toThrow();
+		expect(validateArrayWithNumber).not.toThrow();
+		expect(validateArrayWithBoth).not.toThrow();
+	});
+
+	test('Short object schema syntax', () => {
+		const schema = new Schema({
+			personalInfoWeStole: {
+				address: String,
+				phone: Number
+			}
+		});
+
+		function validateObject() {
+			schema.validate({
+				personalInfoWeStole: {
+					address: 'that place over there',
+					phone: 12323425
+				}
+			});
+		}
+
+		expect(validateObject).not.toThrow();
+	});
+
+	test('Short array schema syntax', () => {
+		const schema = new Schema({
+			favoriteStuff: [String]
+		});
+
+		function validateObject() {
+			schema.validate({
+				favoriteStuff: ['me', 'myself', 'i']
+			});
+		}
+
+		expect(validateObject).not.toThrow();
+	});
 });
 
-describe("Validating object that dons't match a schema", () => {
+describe("Validating object that doesn't match a schema", () => {
 	test('Object contains properties not specified in the schema', () => {
 		function createNewSchema() {
 			const schema = new Schema({
@@ -245,7 +363,7 @@ describe("Validating object that dons't match a schema", () => {
 		});
 	});
 
-	describe("Throw when 'enum' is specified, but the value isn't any of the allowed options", () => {
+	describe("'enum' is specified, but the value isn't any of the allowed options", () => {
 		test('String Type', () => {
 			function createNewSchema() {
 				const schema = new Schema({
@@ -285,7 +403,7 @@ describe("Validating object that dons't match a schema", () => {
 		});
 	});
 
-	test("Throw's when a required field is empty", () => {
+	test('Required field is empty', () => {
 		function createNewSchema() {
 			const schema = new Schema({
 				username: {
@@ -304,73 +422,33 @@ describe("Validating object that dons't match a schema", () => {
 
 		expect(createNewSchema).toThrow('The field "username" is required');
 	});
-});
 
-test("Nested object doens't match the schema", () => {
-	function createNewSchema() {
-		const schema = new Schema({
-			address: {
-				type: Object,
-				child: {
-					city: {
-						type: String
+	test("Nested object with verbose syntax doens't match the schema", () => {
+		function createNewSchema() {
+			const schema = new Schema({
+				address: {
+					type: Object,
+					child: {
+						city: {
+							type: String
+						}
 					}
 				}
-			}
-		});
+			});
 
-		schema.validate({
-			address: {
-				city: 42
-			}
-		});
-	}
-
-	expect(createNewSchema).toThrow(
-		'The field "address.city" is not of the correct type'
-	);
-});
-
-describe('Validating array fields', () => {
-	test('Value matches the array schema', () => {
-		const arraySchema = new Schema({
-			arrayOfStuff: {
-				type: Array,
-				child: [
-					{
-						type: String
-					},
-					{
-						type: Number
-					}
-				]
-			}
-		});
-
-		function validateArrayWithString() {
-			arraySchema.validate({
-				arrayOfStuff: ['Hi there!']
+			schema.validate({
+				address: {
+					city: 42
+				}
 			});
 		}
 
-		function validateArrayWithNumber() {
-			arraySchema.validate({
-				arrayOfStuff: [42]
-			});
-		}
-
-		function validateArrayWithBoth() {
-			arraySchema.validate({
-				arrayOfStuff: ['Hi there!', 42]
-			});
-		}
-
-		expect(validateArrayWithString).not.toThrow();
-		expect(validateArrayWithNumber).not.toThrow();
-		expect(validateArrayWithBoth).not.toThrow();
+		expect(createNewSchema).toThrow(
+			'The field "address.city" is not of the correct type'
+		);
 	});
 
-	test("Value doesn't match the array schema", () => {
+	test("Value doesn't match the verbose array schema", () => {
 		const arraySchema = new Schema({
 			arrayOfStuff: {
 				type: Array,
@@ -396,7 +474,7 @@ describe('Validating array fields', () => {
 		);
 	});
 
-	test('Combined props with allowed and invalid types throws at the right prop', () => {
+	test('Array with multiple allowed types throws at the correct index(verbose)', () => {
 		const arraySchema = new Schema({
 			arrayOfStuff: {
 				type: Array,
@@ -419,6 +497,44 @@ describe('Validating array fields', () => {
 
 		expect(validateSchema).toThrow(
 			'The property "arrayOfStuff[2]" is not of the correct type'
+		);
+	});
+
+	test('Short object schema syntax', () => {
+		const schema = new Schema({
+			personalInfoWeStole: {
+				address: String,
+				phone: Number
+			}
+		});
+
+		function validateObject() {
+			schema.validate({
+				personalInfoWeStole: {
+					address: 123,
+					phone: 'dont need to call'
+				}
+			});
+		}
+
+		expect(validateObject).toThrow(
+			'The field "personalInfoWeStole.address" is not of the correct type'
+		);
+	});
+
+	test('Short array schema syntax', () => {
+		const schema = new Schema({
+			favoriteStuff: [String]
+		});
+
+		function validateObject() {
+			schema.validate({
+				favoriteStuff: [1, 2, 3]
+			});
+		}
+
+		expect(validateObject).toThrow(
+			'The property "favoriteStuff[0]" is not of the correct type'
 		);
 	});
 });

@@ -31,26 +31,51 @@ class Schema {
 	/*
 	 * Compile short schema syntax into verbose one.
 	 */
-	compileSchemaField(fieldSchema) {
+	compileSchemaField(fieldSchema, fieldName) {
 		// Check if the prop is using the shortcut syntax, if it is
 		// then replace it with a schema that uses the verbose syntax.
 		// This check only works for "primitive" types.
 		if (validators.has(fieldSchema)) {
-			return { type: fieldSchema };
+			fieldSchema = { type: fieldSchema };
 		}
 
 		// Check if the value uses a short syntax for the
 		// Array schema, if it is then replace it with the verbose syntax.
 		if (Array.isArray(fieldSchema)) {
-			return {
+			fieldSchema = {
 				type: Array,
-				child: fieldSchema.map(subFieldSchema => {
-					return this.compileSchemaField(subFieldSchema);
-				})
+				child: fieldSchema.map((subFieldSchema, index) =>
+					this.compileSchemaField(subFieldSchema, `${fieldName}[${index}]`)
+				)
 			};
 		}
 
-		// Lastly, if its not a shortcut, return it as it is.
+		// If the field schema is an object and doesn't have a type
+		// property, then its probably a shortcut, or incorrect syntax.
+		if (
+			Object.prototype.toString.apply(fieldSchema) === '[object Object]' &&
+			fieldSchema.type === undefined
+		) {
+			fieldSchema = {
+				type: Object,
+				child: this.compileSchema(fieldSchema, fieldName)
+			};
+		}
+
+		// Get the validator of the schema.
+		const typeValidator = validators.get(fieldSchema.type);
+
+		// If no validator was found, then throw an
+		// error since its most likely an incurrect syntax.
+		if (typeValidator === undefined) {
+			throw Error(`Invalid type for the field "${fieldName}"`);
+		}
+
+		// Validate the compiled field schema.
+		typeValidator.validateSchema(fieldSchema);
+
+		// finaly return the compiled schema
+		// (or the original if it wasen't changed)
 		return fieldSchema;
 	}
 
@@ -58,19 +83,22 @@ class Schema {
 	 * Validates that a schema is formatted correctly
 	 * and compiles shortcuts into the verbose syntax.
 	 */
-	compileSchema(schema = this.__schema) {
+	compileSchema(schema = this.__schema, parentField) {
 		const compiledSchema = {};
 
 		for (const fieldName in schema) {
-			const compiledField = this.compileSchemaField(schema[fieldName]);
-			const typeValidator = validators.get(compiledField.type);
+			// Compose a fieldname including the parent for better debuging.
+			const fieldPath =
+				parentField !== undefined ? parentField + '.' + fieldName : fieldName;
 
-			if (typeValidator === undefined) {
-				throw Error(`Invalid type for the field "${fieldName}"`);
-			}
+			// Compile the field, and save it.
+			// "compiling" is needed because a field might use a shortcut.
+			const compiledField = this.compileSchemaField(
+				schema[fieldName],
+				fieldPath
+			);
 
-			typeValidator.validateSchema(compiledField);
-
+			// Add to the new compiled schema.
 			compiledSchema[fieldName] = compiledField;
 		}
 
