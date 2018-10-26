@@ -3,6 +3,7 @@ node_js:
   - 'node'
 cache: yarn
 install:
+  - yarn
   - yarn global add codecov
 script:
   - yarn test
