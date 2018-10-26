@@ -5,5 +5,5 @@ cache: yarn
 install:
   - yarn global add codecov
 script:
-  - jest
+  - yarn test
   - codecov
