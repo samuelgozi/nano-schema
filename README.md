@@ -4,6 +4,7 @@
 # schema-validator
 As the name suggest this small library helps you validate javascript objects agains a schema.
 The goal of the project was to create a lightweight, performant and extensible library with no dependencies.
+Currently the size of the library, compressed and gzipped(without babel transpilation) is: **1.25KB**
 
 ## Installation
 I stil haven't decided on a name, so an NPM package doesn't exist,
