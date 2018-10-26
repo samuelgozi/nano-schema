@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/samuelgozi/schema-validator.svg?branch=master)](https://travis-ci.org/samuelgozi/schema-validator)
+[![codecov](https://codecov.io/gh/samuelgozi/schema-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/samuelgozi/schema-validator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 # schema-validator
 As the name suggest this small library helps you validate javascript objects agains a schema.
 The goal of the project was to create a lightweight, performant and extensible library with no dependencies.
