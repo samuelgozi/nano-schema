@@ -24,13 +24,13 @@ yarn add https://github.com/samuelgozi/schema-validator
 Lets start with an example:
 ```js
 const schema = new Schema({
-	name: String,
-	age: Number,
-	familyMembers: [String],
-	address: {
-		city: String,
-		street: String,
-	}
+  name: String,
+  age: Number,
+  familyMembers: [String],
+  address: {
+    city: String,
+    street: String,
+  }
 });
 ```
 Lets break it down.
@@ -45,13 +45,13 @@ In this example, there are no other requirements, non of the fields is required 
 Its very simple, in order to verify that an object passes all the constrains we just use the `validate` method:
 ```js
 schema.validate({
-	name: 'Samuel',
-	age: '23',
-	familyMembers: ['brother name', 'sister name', 'etc'],
-	address: {
-		city: 'Tel-Aviv',
-		address: 'Hertzel!!!'
-	}
+  name: 'Samuel',
+  age: '23',
+  familyMembers: ['brother name', 'sister name', 'etc'],
+  address: {
+    city: 'Tel-Aviv',
+    address: 'Hertzel!!!'
+  }
 });
 ```
 Currently if the object matches the schema, then it will "not throw",
@@ -63,13 +63,13 @@ it will be thrown.
 Lets show an example with the schema above.
 ```js
 schema.validate({
-	/* ... */
+  /* ... */
 
-	address: {
-		city: 42,
-		
-		/* ... */
-	}
+  address: {
+    city: 42,
+
+    /* ... */
+  }
 });
 ```
 In this object, everithing is valid except `object.address.city`, so the validation will throw:
@@ -84,10 +84,10 @@ But dont worry! its still easy!
 So, lets say we want to make a field be required, heres is how we do that:
 ```js
 const schema = new Schema({
-	name: {
-		type: String,
-		required: true
-	}
+  name: {
+    type: String,
+    required: true
+  }
 });
 ```
 As you can see, its pretty straight forward.
@@ -100,10 +100,10 @@ Dont worry, one of the main goals of this library is to provide helpful error me
 Lets see an example. Lets provide an invalid property to the "String" type and see what happens.
 ```js
 const schema = new Schema({
-	name: {
-		type: String,
-		banana: 'banana?'
-	}
+  name: {
+    type: String,
+    banana: 'banana?'
+  }
 });
 ```
 In the example above, the `name` prop contains an unsupported/invalid configuration option `banana`,
@@ -115,7 +115,7 @@ There are two ways of specifing a "Field schema". One is short and easier to rea
 Here is an example of how we would use the "short" syntax to create a field that should be of type `String`:
 ```
 const schema = new Schema({
-	name: String
+  name: String
 });
 ```
 As you can see its pretty easy to read, and pretty self explanatory.
@@ -123,9 +123,9 @@ As you can see its pretty easy to read, and pretty self explanatory.
 The verbose version of the same "Field schema" would be:
 ```
 const schema = new Schema({
-	name: {
-		type: String
-	}
+  name: {
+    type: String
+  }
 });
 ```
 The validation will work exactly the same for both syntaxes. In fact, behnid the scenes, the short version
@@ -136,19 +136,17 @@ With the `Object` and `Array` types the short and verbose version will look like
 ```js
 // Verbose
 const schema = new Schema({
-	favoriteMovies: {
-		type: Array,
-		child: [
-			{
-				type: String
-			}
-		]
-	}
+  favoriteMovies: {
+    type: Array,
+    child: [{
+      type: String
+    }]
+  }
 });
 
 // Short
 const schema = new Schema({
-	favoriteMovies: [String]
+  favoriteMovies: [String]
 });
 ```
 
@@ -156,25 +154,25 @@ const schema = new Schema({
 ```js
 // Verbose
 const schema = new Schema({
-	address: {
-		type: Object,
-		child: {
-			city: {
-				type: String
-			},
-			street: {
-				type: String
-			}
-		}
-	}
+  address: {
+    type: Object,
+    child: {
+      city: {
+        type: String
+      },
+      street: {
+        type: String
+      }
+    }
+  }
 });
 
 // Short
 const schema = new Schema({
-	address: {
-		city: String,
-		street: String
-	}
+  address: {
+    city: String,
+    street: String
+  }
 });
 ```
 
@@ -185,29 +183,29 @@ As you can see in the later examples, the differance is significant. But the ver
 The built in types are: `String`, `Number`, `Boolean`, `Date`, `Array` and `Object`.
 
 Each type has additional options, this is not a final list, and more will be added in the near future.
-### `String`
+**`String`**
  * `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
  An empty string counts an empty, and will throw.
  * `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
  All the enum options must of the correct type or an error will be thrown on schema creation.
 
-### `Number`
+**`Number`**
  * `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
  * `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
  All the enum options must of the correct type or an error will be thrown on schema creation.
 
-### `Boolean`.
+**`Boolean`.**
  * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
 
-### `Date`
+**`Date`**
 A valid date is any date that javascript can parse and result in a valid date object.
  * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
 
-### `Array`
+**`Array`**
  * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
  * `child` - Array. An array of schema fields that can be included in the array. So if a value matches any of them it is allowed. Buif the schema doesn't match any of the provided field schemas then the validator will throw with an error specifing exactly which index threw.
 
-### `Object`
+**`Object`**
  * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
  Please note that currently an empty object will pass validation.
  * `child` - A sub scehma object (Like the one passed to the `new Schema()` constructor).
