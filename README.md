@@ -183,6 +183,7 @@ As you can see in the later examples, the differance is significant. But the ver
 The built in types are: `String`, `Number`, `Boolean`, `Date`, `Array` and `Object`.
 
 Each type has additional options, this is not a final list, and more will be added in the near future.
+
 **`String`**
  * `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
  An empty string counts an empty, and will throw.
