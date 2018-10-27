@@ -40,3 +40,16 @@ test("Schema validator doesn't throw when all fields are valid", () => {
 
 	expect(validate).not.toThrow();
 });
+
+test("Schema validator throws when the required value isn't a boolean", () => {
+	function validate() {
+		objectValidator.validateSchema({
+			type: Object,
+			required: 'yes please!'
+		});
+	}
+
+	expect(validate).toThrow(
+		'Property named "required" should be of type boolean'
+	);
+});

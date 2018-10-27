@@ -72,3 +72,27 @@ test("Schema validator doesn't throw when all fields are valid", () => {
 
 	expect(validate).not.toThrow();
 });
+
+test("Schema validator throws when the required value isn't a boolean", () => {
+	function validate() {
+		stringValidator.validateSchema({
+			type: String,
+			required: 'yes please!'
+		});
+	}
+
+	expect(validate).toThrow(
+		'Property named "required" should be of type boolean'
+	);
+});
+
+test("Schema validator throws when the enum value isn't an array", () => {
+	function validate() {
+		stringValidator.validateSchema({
+			type: String,
+			enum: 'You choose'
+		});
+	}
+
+	expect(validate).toThrow('Property named "enum" should be of type Array');
+});

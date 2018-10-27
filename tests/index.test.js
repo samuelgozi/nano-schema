@@ -291,7 +291,7 @@ describe('Validating objects that match the schema', () => {
 	});
 });
 
-describe("Validating object that doesn't match a schema", () => {
+describe("Validating an object that doesn't match a schema", () => {
 	test('Object contains properties not specified in the schema', () => {
 		function createNewSchema() {
 			const schema = new Schema({
@@ -308,6 +308,26 @@ describe("Validating object that doesn't match a schema", () => {
 
 		expect(createNewSchema).toThrow(
 			'The object contains invalid properties: password'
+		);
+	});
+
+	test('Nested object with properties not specified in the schema throws error message with the correct path to field', () => {
+		function createNewSchema() {
+			const schema = new Schema({
+				address: {
+					street: String
+				}
+			});
+
+			schema.validate({
+				address: {
+					house: 12
+				}
+			});
+		}
+
+		expect(createNewSchema).toThrow(
+			'The object contains invalid properties: address.house'
 		);
 	});
 

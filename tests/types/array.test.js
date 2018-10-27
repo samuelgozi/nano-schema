@@ -30,7 +30,7 @@ test('Schema validator with unknown props throws', () => {
 
 test("Schema validator doesn't throw when all fields are valid", () => {
 	const stringSchema = {
-		type: Boolean,
+		type: Array,
 		required: true
 	};
 
@@ -39,4 +39,17 @@ test("Schema validator doesn't throw when all fields are valid", () => {
 	}
 
 	expect(validate).not.toThrow();
+});
+
+test("Schema validator throws when the required value isn't a boolean", () => {
+	function validate() {
+		arrayValidator.validateSchema({
+			type: Array,
+			required: 'yes please!'
+		});
+	}
+
+	expect(validate).toThrow(
+		'Property named "required" should be of type boolean'
+	);
 });
