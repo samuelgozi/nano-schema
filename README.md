@@ -18,11 +18,12 @@ yarn add https://github.com/samuelgozi/schema-validator
 ```
 
 ## Roadmap
+- [X] ~~100% Test coverage~~
 - [ ] Make more thorough tests with more "extreme" test cases.
-- [ ] Export an API for adding custom types.
+- [x] ~~Export an API for adding custom types.~~
 - [ ] Add documentation and guidelines for contributors.
 - [ ] Transpile everithing with babel and add a sizes to the Readme.
-- [ ] Configure CI/CD.
+- [x] ~~Configure CI/CD.~~
 
 ## How to use
 Lets start with an example:
