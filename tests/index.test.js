@@ -538,3 +538,41 @@ describe("Validating object that doesn't match a schema", () => {
 		);
 	});
 });
+
+describe('Custom validators', () => {
+	test('Adding a validator works', () => {
+		Schema.validators.set('Custom Type', {
+			validateType(value) {
+				return (
+					typeof value === 'string' &&
+					value === 'This is the only accepted value for this "custom type"'
+				);
+			},
+
+			validateSchema(schemaObject) {
+				const allowedProps = ['type'];
+
+				for (let prop in schemaObject) {
+					// Check if the property is allowed.
+					if (!allowedProps.includes(prop)) {
+						throw Error(`Unknown property "${prop}"`);
+					}
+				}
+			}
+		});
+
+		const schema = new Schema({
+			myField: {
+				type: 'Custom Type'
+			}
+		});
+
+		function validateWithCustomType() {
+			schema.validate({
+				myField: 'This is the only accepted value for this "custom type"'
+			});
+		}
+
+		expect(validateWithCustomType).not.toThrow();
+	});
+});

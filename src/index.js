@@ -28,6 +28,10 @@ class Schema {
 		this.__schema = compiledSchema;
 	}
 
+	static get validators() {
+		return validators;
+	}
+
 	/*
 	 * Compile short schema syntax into verbose one.
 	 */
