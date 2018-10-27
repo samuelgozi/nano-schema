@@ -290,14 +290,13 @@ Here is a simplified example of how it would look.
 
 Each method has a specific role. Here is an explanation of what each of them does.
 
+- `allowedTypes` - An array that lists all the allowed properties in the type schema, including 'type'.
 - `validateType` - This method is the one that should contain the logic to allow or reject a value. It should return a Boolean, `true` if the value matches and `false` otherwise.
   The method will receive thw value itself, and the schema the user specified with the specific options he specified.
-- `validateSchema` - This method is invoked when a schema class is instantiated, and it is used to check that the schema was written correctly and doesnt contain any invalid props or typos.
+- `validateSchema` - This method is invoked when a schema class is instantiated, and it is used to check that the schema was written correctly and doesn't contain any invalid props or typos.
 - `required` - If specified, it will be run when the user set `required: true` in order to check if a value is not empty. This methods is not required, if it wasen't provided then the `validateType` method will be used instead.
-- `enum` - This method is used in order to verify that the value matches the list of available options that were specified int the `enum` prop.
-  This will only be run if the user specified `enum: []` in the schema.
 
-Please note that only `validateType` and `validateSchema` are required, your type does not need to support `required` or `enum`.
+Please note that only`validateType` and `allowedProps` props are required, your type does not need to support `required` or `enum`, and shouldn't have a `validateSchema` method unless it adds options other that `enum` and `required`, since tests for those are already built in.
 
 If you would like to see some good examples, just look inside the folder `src/types`.
 

@@ -75,8 +75,43 @@ class Schema {
 			throw Error(`Invalid type for the field "${fieldName}"`);
 		}
 
+		// Validate that the schema contain only allowed values.
+		const allowedProps = typeValidator.allowedProps;
+
+		for (let prop in fieldSchema) {
+			// Check if the property is allowed.
+			if (!allowedProps.includes(prop)) {
+				throw Error(`Unknown property "${prop}"`);
+			}
+
+			// Verify that 'required' is a Boolean.
+			if (prop === 'required') {
+				if (typeof fieldSchema.required !== 'boolean') {
+					throw Error('Property named "required" should be of type boolean');
+				}
+			}
+
+			if (prop === 'enum') {
+				// Verify that enum is an Array.
+				if (!Array.isArray(fieldSchema.enum)) {
+					throw Error('Property named "enum" should be of type Array');
+				}
+
+				// Verify that all the options inside the the enum are of the correct type.
+				for (let option of fieldSchema.enum) {
+					if (!typeValidator.validateType(option)) {
+						throw Error(
+							'All the options inside the enum should be of the correct type'
+						);
+					}
+				}
+			}
+		}
+
 		// Validate the compiled field schema.
-		typeValidator.validateSchema(fieldSchema);
+		if (typeValidator.validateSchema !== undefined) {
+			typeValidator.validateSchema(fieldSchema);
+		}
 
 		// finaly return the compiled schema
 		// (or the original if it wasen't changed)

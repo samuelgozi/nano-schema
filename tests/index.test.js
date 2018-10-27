@@ -562,6 +562,7 @@ describe("Validating an object that doesn't match a schema", () => {
 describe('Custom validators', () => {
 	test('Adding a validator works', () => {
 		Schema.validators.set('Custom Type', {
+			allowedProps: ['type'],
 			validateType(value) {
 				return (
 					typeof value === 'string' &&
