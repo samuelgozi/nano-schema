@@ -151,7 +151,7 @@ class Schema {
 		// If the field is not undefined, then validate its type.
 		// We do this check because we are iterating over the schema, not the object itself.
 		if (value !== undefined) {
-			const isValid = validator.validateType(value);
+			const isValid = validator.validateType(value, schema);
 
 			if (!isValid) {
 				throw Error(`The field "${propPath}" is not of the correct type`);

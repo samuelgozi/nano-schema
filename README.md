@@ -1,222 +1,334 @@
 [![Build Status](https://travis-ci.org/samuelgozi/schema-validator.svg?branch=master)](https://travis-ci.org/samuelgozi/schema-validator)
 [![codecov](https://codecov.io/gh/samuelgozi/schema-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/samuelgozi/schema-validator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 # schema-validator
-As the name suggest this small library helps you validate javascript objects agains a schema.
+
+As the name suggest this library helps you validate javascript objects agains a schema.
 The goal of the project was to create a lightweight, performant and extensible library with no dependencies.
-Currently the size of the library, compressed and gzipped(without babel transpilation) is: **1.25KB**
+Currently the size of the library, compressed and gzipped(without bundling) is: **1.25KB**
 
 ## Installation
+
 I stil haven't decided on a name, so an NPM package doesn't exist,
 if you would like to install it you should use the github link as shown below.
+And if you have an idea for a name, feel free to open an issue.
+
 ```
 npm install https://github.com/samuelgozi/schema-validator
 ```
+
 or if (like me) you use Yarn:
+
 ```
 yarn add https://github.com/samuelgozi/schema-validator
 ```
 
 ## Roadmap
-- [X] ~~100% Test coverage~~
+
+- [x] ~~100% Test coverage~~
 - [ ] Make more thorough tests with more "extreme" test cases.
 - [x] ~~Export an API for adding custom types.~~
 - [ ] Add documentation and guidelines for contributors.
 - [ ] Transpile everithing with babel and add a sizes to the Readme.
 - [x] ~~Configure CI/CD.~~
+- [ ] Make a nice logo.
+- [ ] Move the documentation into the GitHub Wiki.
 
 ## How to use
+
 Lets start with an example:
+
 ```js
 const schema = new Schema({
-  name: String,
-  age: Number,
-  familyMembers: [String],
-  address: {
-    city: String,
-    street: String,
-  }
+	name: String,
+	age: Number,
+	familyMembers: [String],
+	address: {
+		city: String,
+		street: String
+	}
 });
 ```
+
 Lets break it down.
 The schema we created above will put the next constrains in place:
- * `object.name` - Can only be a String
- * `object.age` - Can only be a Number
- * `object.familiyMembers` - Can only be an Array, and its list items can only be Strings
- * `object.address` - Can only be an Object, and its only allowed props are `city` and `street` and both on them must be strings.
-In this example, there are no other requirements, non of the fields is required or has azny additional restrictions.
+
+- `object.name` - Can only be a String
+- `object.age` - Can only be a Number
+- `object.familiyMembers` - Can only be an Array, and its list items can only be Strings
+- `object.address` - Can only be an Object, and its only allowed props are `city` and `street` and both on them must be strings.
+  In this example, there are no other requirements, non of the fields is required or has azny additional restrictions.
 
 ### Now, how do I test my object?
+
 Its very simple, in order to verify that an object passes all the constrains we just use the `validate` method:
+
 ```js
 schema.validate({
-  name: 'Samuel',
-  age: '23',
-  familyMembers: ['brother name', 'sister name', 'etc'],
-  address: {
-    city: 'Tel-Aviv',
-    address: 'Hertzel!!!'
-  }
+	name: 'Samuel',
+	age: '23',
+	familyMembers: ['brother name', 'sister name', 'etc'],
+	address: {
+		city: 'Tel-Aviv',
+		address: 'Hertzel!!!'
+	}
 });
 ```
+
 Currently if the object matches the schema, then it will "not throw",
 This will be changed in near future to returning a `true` or an array of errors.
 
 ### What happens when it doesn't match?
+
 When an object doesn't match a schema, an error message that tells us exactly which property caused
 it will be thrown.
 Lets show an example with the schema above.
+
 ```js
 schema.validate({
-  /* ... */
+	/* ... */
 
-  address: {
-    city: 42,
+	address: {
+		city: 42
 
-    /* ... */
-  }
+		/* ... */
+	}
 });
 ```
+
 In this object, everithing is valid except `object.address.city`, so the validation will throw:
-```The property "address.city" is not of the correct type```
+`The property "address.city" is not of the correct type`
 
 ### Adding additional constrains to a field
+
 Up until now we have seen how to declare a simple "Type" with no additional constrains,
 But what happens when we want to add additional constrains? Well, its very simple,
 instead of using the "short" syntax we used above, we are going to use the "verbose" one.
 But dont worry! its still easy!
 
 So, lets say we want to make a field be required, heres is how we do that:
+
 ```js
 const schema = new Schema({
-  name: {
-    type: String,
-    required: true
-  }
+	name: {
+		type: String,
+		required: true
+	}
 });
 ```
+
 As you can see, its pretty straight forward.
 Instead of using the "short" field syntax, we use the "verbose" one, which means
 that instead of writing `name: String`, we provide an object that has a `type` property, and any additional options
 that the type we want to use supports, in this example it was `required`.
 
 ### What happens if I make a mistake?
-Dont worry, one of the main goals of this library is to provide helpful error messages.
+
+Don't worry, one of the main goals of this library is to provide helpful error messages.
 Lets see an example. Lets provide an invalid property to the "String" type and see what happens.
+
 ```js
 const schema = new Schema({
-  name: {
-    type: String,
-    banana: 'banana?'
-  }
+	name: {
+		type: String,
+		banana: 'banana?'
+	}
 });
 ```
+
 In the example above, the `name` prop contains an unsupported/invalid configuration option `banana`,
 Running this code will throw the error: `Unknown property "banana"`.
 
 ## Short vs verbose syntax
-There are two ways of specifing a "Field schema". One is short and easier to read, and the second one is "verbose" and is used when we want to add additional options to the field. like `required`, `enum` etc.
+
+There are two ways of writing a "Field schema". One is short and easier to read, and the second one is "verbose" and is used when we want additional options in the field. like `required`, `enum` etc.
 
 Here is an example of how we would use the "short" syntax to create a field that should be of type `String`:
-```
+
+```js
 const schema = new Schema({
-  name: String
+	name: String
 });
 ```
+
 As you can see its pretty easy to read, and pretty self explanatory.
 
 The verbose version of the same "Field schema" would be:
-```
+
+```js
 const schema = new Schema({
-  name: {
-    type: String
-  }
+	name: {
+		type: String
+	}
 });
 ```
+
 The validation will work exactly the same for both syntaxes. In fact, behnid the scenes, the short version
 will be converted into the verbose one. So its practically the same.
 
 With the `Object` and `Array` types the short and verbose version will look like this:
 **Array**
+
 ```js
 // Verbose
 const schema = new Schema({
-  favoriteMovies: {
-    type: Array,
-    child: [{
-      type: String
-    }]
-  }
+	favoriteMovies: {
+		type: Array,
+		child: [
+			{
+				type: String
+			}
+		]
+	}
 });
 
 // Short
 const schema = new Schema({
-  favoriteMovies: [String]
+	favoriteMovies: [String]
 });
 ```
 
 **Object**
+
 ```js
 // Verbose
 const schema = new Schema({
-  address: {
-    type: Object,
-    child: {
-      city: {
-        type: String
-      },
-      street: {
-        type: String
-      }
-    }
-  }
+	address: {
+		type: Object,
+		child: {
+			city: {
+				type: String
+			},
+			street: {
+				type: String
+			}
+		}
+	}
 });
 
 // Short
 const schema = new Schema({
-  address: {
-    city: String,
-    street: String
-  }
+	address: {
+		city: String,
+		street: String
+	}
 });
 ```
 
 As you can see in the later examples, the differance is significant. But the verbose syntax is needed because sometimes we need to add options to the fields.
 
-
 ## What types are supported?
+
 The built in types are: `String`, `Number`, `Boolean`, `Date`, `Array` and `Object`.
 
 Each type has additional options, this is not a final list, and more will be added in the near future.
 
 **`String`**
- * `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
- An empty string counts an empty, and will throw.
- * `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
- All the enum options must of the correct type or an error will be thrown on schema creation.
+
+- `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+  An empty string counts an empty, and will throw.
+- `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
+  All the enum options must of the correct type or an error will be thrown on schema creation.
 
 **`Number`**
- * `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
- * `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
- All the enum options must of the correct type or an error will be thrown on schema creation.
+
+- `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+- `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
+  All the enum options must of the correct type or an error will be thrown on schema creation.
 
 **`Boolean`.**
- * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+
+- `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
 
 **`Date`**
 A valid date is any date that javascript can parse and result in a valid date object.
- * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+
+- `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
 
 **`Array`**
- * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
- * `child` - Array. An array of schema fields that can be included in the array. So if a value matches any of them it is allowed. Buif the schema doesn't match any of the provided field schemas then the validator will throw with an error specifing exactly which index threw.
+
+- `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+- `child` - Array. An array of schema fields that can be included in the array. So if a value matches any of them it is allowed. Buif the schema doesn't match any of the provided field schemas then the validator will throw with an error specifing exactly which index threw.
 
 **`Object`**
- * `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
- Please note that currently an empty object will pass validation.
- * `child` - A sub scehma object (Like the one passed to the `new Schema()` constructor).
- 
+
+- `Required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
+  Please note that currently an empty object will pass validation.
+- `child` - A sub scehma object (Like the one passed to the `new Schema()` constructor).
+
+## Making your own type.
+
+Making your own type is very easy.
+All the types are saved within a `Map` inside the Schema class under the static `getter` called `validators`.
+If you are not familiar with `Map`s in Javascript, its pretty easy to understand, [here is the MDN documentation for it](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
+
+### Creating a custom type
+
+A type is just an object with some methods that the schema class will invoke when needed.
+Here is a simplified example of how it would look.
+
+```js
+{
+  validateType(value, schema) {
+    /* ... */
+  },
+
+  validateSchema(schema) {
+    /* ...  */
+  },
+
+  required(value) {
+    /* ... */
+  },
+
+  enum(value, options) {
+    /* ... */
+  }
+};
+```
+
+Each method has a specific role. Here is an explanation of what each of them does.
+
+- `validateType` - This method is the one that should contain the logic to allow or reject a value. It should return a Boolean, `true` if the value matches and `false` otherwise.
+  The method will receive thw value itself, and the schema the user specified with the specific options he specified.
+- `validateSchema` - This method is invoked when a schema class is instantiated, and it is used to check that the schema was written correctly and doesnt contain any invalid props or typos.
+- `required` - If specified, it will be run when the user set `required: true` in order to check if a value is not empty. This methods is not required, if it wasen't provided then the `validateType` method will be used instead.
+- `enum` - This method is used in order to verify that the value matches the list of available options that were specified int the `enum` prop.
+  This will only be run if the user specified `enum: []` in the schema.
+
+Please note that only `validateType` and `validateSchema` are required, your type does not need to support `required` or `enum`.
+
+If you would like to see some good examples, just look inside the folder `src/types`.
+
+### Adding the custom type
+
+Adding the custom type is very easy, just add it to the `validators` map in the static class. The `key` should be the identifier that the user will put in the `type` prop in the schema.
+
+Here is an example:
+
+```js
+// This sould br the path to the custom type object we created.
+const customTypeObject = require('./customType.js');
+const Schema = require('schema-validator');
+
+Schema.validators.set('customType', customTypeObject);
+
+// Now the user can use the type by typing:
+const schema = new Schema({
+	username: {
+		type: 'customType'
+	}
+});
+
+// Or even the short way
+const schema = new Schema({
+	username: 'customType'
+});
+```
+
 ## Can I contribute?
+
 Yes, feel free to help. I tried to document the code as much as possible, and make it as clean as possible, and it is very easy to extend with additional types.
 
 And if you have an issue or a feature request, just open an issue, I'll usually respond pretty fast.
