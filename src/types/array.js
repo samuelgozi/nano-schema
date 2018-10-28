@@ -1,5 +1,5 @@
 module.exports = {
-	allowedProps: ['type', 'required', 'child'],
+	allowedProps: ['required', 'child'],
 
 	validateType(value) {
 		return Array.isArray(value);

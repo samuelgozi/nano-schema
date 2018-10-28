@@ -1,11 +1,7 @@
 module.exports = {
-	allowedProps: ['type', 'required', 'enum'],
+	allowedProps: ['required', 'enum'],
 
 	validateType(value) {
-		return typeof value === 'string';
-	},
-
-	required(value) {
-		return this.validateType(value) && value !== '';
+		return typeof value === 'string' && value !== '';
 	}
 };

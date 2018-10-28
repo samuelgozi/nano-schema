@@ -27,7 +27,7 @@ yarn add https://github.com/samuelgozi/schema-validator
 ## Roadmap
 
 - [x] ~~100% Test coverage~~
-- [ ] Make more thorough tests with more "extreme" test cases.
+- [ ] (**WIP**)Refactor the whole tests structure, and add tests nested objects/arrays.
 - [x] ~~Export an API for adding custom types.~~
 - [ ] Add documentation and guidelines for contributors.
 - [ ] Transpile everything with babel and add a sizes to the Readme.
@@ -41,13 +41,13 @@ Lets start with an example:
 
 ```js
 const schema = new Schema({
-  name: String,
-  age: Number,
-  familyMembers: [String],
-  address: {
-    city: String,
-    street: String
-  }
+	name: String,
+	age: Number,
+	familyMembers: [String],
+	address: {
+		city: String,
+		street: String
+	}
 });
 ```
 
@@ -66,13 +66,13 @@ Its very simple, in order to verify that an object passes all the constrains we 
 
 ```js
 schema.validate({
-  name: 'Samuel',
-  age: '23',
-  familyMembers: ['brother name', 'sister name', 'etc'],
-  address: {
-    city: 'Tel-Aviv',
-    address: 'Hertzel!!!'
-  }
+	name: 'Samuel',
+	age: '23',
+	familyMembers: ['brother name', 'sister name', 'etc'],
+	address: {
+		city: 'Tel-Aviv',
+		address: 'Hertzel!!!'
+	}
 });
 ```
 
@@ -87,13 +87,13 @@ Lets show an example with the schema above.
 
 ```js
 schema.validate({
-  /* ... */
+	/* ... */
 
-  address: {
-    city: 42
+	address: {
+		city: 42
 
-    /* ... */
-  }
+		/* ... */
+	}
 });
 ```
 
@@ -111,10 +111,10 @@ So, lets say we want to make a field be required, heres is how we do that:
 
 ```js
 const schema = new Schema({
-  name: {
-    type: String,
-    required: true
-  }
+	name: {
+		type: String,
+		required: true
+	}
 });
 ```
 
@@ -130,10 +130,10 @@ Lets see an example. Lets provide an invalid property to the "String" type and s
 
 ```js
 const schema = new Schema({
-  name: {
-    type: String,
-    banana: 'banana?'
-  }
+	name: {
+		type: String,
+		banana: 'banana?'
+	}
 });
 ```
 
@@ -148,7 +148,7 @@ Here is an example of how we would use the "short" syntax to create a field that
 
 ```js
 const schema = new Schema({
-  name: String
+	name: String
 });
 ```
 
@@ -158,9 +158,9 @@ The verbose version of the same "Field schema" would be:
 
 ```js
 const schema = new Schema({
-  name: {
-    type: String
-  }
+	name: {
+		type: String
+	}
 });
 ```
 
@@ -173,19 +173,19 @@ With the `Object` and `Array` types the short and verbose version will look like
 ```js
 // Verbose
 const schema = new Schema({
-  favoriteMovies: {
-    type: Array,
-    child: [
-      {
-        type: String
-      }
-    ]
-  }
+	favoriteMovies: {
+		type: Array,
+		child: [
+			{
+				type: String
+			}
+		]
+	}
 });
 
 // Short
 const schema = new Schema({
-  favoriteMovies: [String]
+	favoriteMovies: [String]
 });
 ```
 
@@ -194,25 +194,25 @@ const schema = new Schema({
 ```js
 // Verbose
 const schema = new Schema({
-  address: {
-    type: Object,
-    child: {
-      city: {
-        type: String
-      },
-      street: {
-        type: String
-      }
-    }
-  }
+	address: {
+		type: Object,
+		child: {
+			city: {
+				type: String
+			},
+			street: {
+				type: String
+			}
+		}
+	}
 });
 
 // Short
 const schema = new Schema({
-  address: {
-    city: String,
-    street: String
-  }
+	address: {
+		city: String,
+		street: String
+	}
 });
 ```
 
@@ -270,31 +270,24 @@ Here is a simplified example of how it would look.
 
 ```js
 {
+  allowedProps: ['required', 'enum', 'etc'],
+
   validateType(value, schema) {
     /* ... */
   },
 
   validateSchema(schema) {
     /* ...  */
-  },
-
-  required(value) {
-    /* ... */
-  },
-
-  enum(value, options) {
-    /* ... */
   }
 };
 ```
 
-Each method has a specific role. Here is an explanation of what each of them does.
+Yep, its that simple. Each property has a specific role. Here is an explanation of what each of them does.
 
-- `allowedTypes` - An array that lists all the allowed properties in the type schema, including 'type'.
+- `allowedProps` - An array that lists all the allowed properties in the type schema, excluding 'type', because its always required(we add it for you).
 - `validateType` - This method is the one that should contain the logic to allow or reject a value. It should return a Boolean, `true` if the value matches and `false` otherwise.
   The method will receive thw value itself, and the schema the user specified with the specific options he specified.
 - `validateSchema` - This method is invoked when a schema class is instantiated, and it is used to check that the schema was written correctly and doesn't contain any invalid props or typos.
-- `required` - If specified, it will be run when the user set `required: true` in order to check if a value is not empty. This methods is not required, if it wasen't provided then the `validateType` method will be used instead.
 
 Please note that only`validateType` and `allowedProps` props are required, your type does not need to support `required` or `enum`, and shouldn't have a `validateSchema` method unless it adds options other that `enum` and `required`, since tests for those are already built in.
 
@@ -315,14 +308,14 @@ Schema.validators.set('customType', customTypeObject);
 
 // Now the user can use the type by typing:
 const schema = new Schema({
-  username: {
-    type: 'customType'
-  }
+	username: {
+		type: 'customType'
+	}
 });
 
 // Or even the short way
 const schema = new Schema({
-  username: 'customType'
+	username: 'customType'
 });
 ```
 

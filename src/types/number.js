@@ -1,5 +1,5 @@
 module.exports = {
-	allowedProps: ['type', 'required', 'enum'],
+	allowedProps: ['required', 'enum'],
 
 	validateType(value) {
 		return typeof value === 'number' && !Number.isNaN(value);

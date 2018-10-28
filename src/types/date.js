@@ -1,5 +1,5 @@
 module.exports = {
-	allowedProps: ['type', 'required'],
+	allowedProps: ['required'],
 
 	validateType(value) {
 		if (value === null) return false;

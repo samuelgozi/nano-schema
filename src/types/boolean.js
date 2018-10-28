@@ -1,5 +1,5 @@
 module.exports = {
-	allowedProps: ['type', 'required'],
+	allowedProps: ['required'],
 
 	validateType(value) {
 		return typeof value === 'boolean';
