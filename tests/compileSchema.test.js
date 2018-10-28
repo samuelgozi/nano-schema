@@ -1,10 +1,94 @@
 const Schema = require('../src/index');
 
 describe('Schema Compiler', () => {
+	test('Throws when providing an invalid type', () => {
+		const schema = new Schema({});
+
+		function testVerbose() {
+			schema.compileSchemaField({
+				name: {
+					type: 'whatever'
+				}
+			});
+		}
+
+		function testShort() {
+			schema.compileSchemaField({ name: 'whatever' });
+		}
+
+		expect(testVerbose).toThrow('Invalid type for the field "name"');
+		expect(testShort).toThrow('Invalid type for the field "name"');
+	});
+
+	test('compileSchemaField converts shortcuts into verbose syntax', () => {
+		const schema = new Schema({});
+
+		expect(schema.compileSchemaField(String, 'propName')).toEqual({
+			type: String
+		});
+
+		expect(schema.compileSchemaField(Number, 'propName')).toEqual({
+			type: Number
+		});
+
+		expect(schema.compileSchemaField(Boolean, 'propName')).toEqual({
+			type: Boolean
+		});
+
+		expect(schema.compileSchemaField(Date, 'propName')).toEqual({
+			type: Date
+		});
+
+		expect(schema.compileSchemaField(Array, 'propName')).toEqual({
+			type: Array
+		});
+
+		expect(schema.compileSchemaField(Object, 'propName')).toEqual({
+			type: Object
+		});
+	});
+
+	test('compileSchemaField converts object and array short syntax into verbose', () => {
+		const schema = new Schema({});
+
+		expect(schema.compileSchemaField([String], 'propName')).toEqual({
+			type: Array,
+			child: [
+				{
+					type: String
+				}
+			]
+		});
+
+		expect(schema.compileSchemaField({ name: String }, 'propName')).toEqual({
+			type: Object,
+			child: {
+				name: {
+					type: String
+				}
+			}
+		});
+	});
+
+	test('compileSchemaField correcty identifies objects that are neither shortcuts or types', () => {
+		const schema = new Schema({});
+
+		function testSyntax() {
+			schema.compileSchemaField(
+				{
+					name: 'Slim Shady'
+				},
+				'propName'
+			);
+		}
+
+		expect(testSyntax).toThrow('Invalid type for the field "propName.name"');
+	});
+
 	test('compileSchemaField throws when there are unknown/unallowed props', () => {
 		const schema = new Schema({});
 
-		function testValidateArray() {
+		function validate() {
 			schema.compileSchemaField(
 				{
 					type: String,
@@ -14,13 +98,13 @@ describe('Schema Compiler', () => {
 			);
 		}
 
-		expect(testValidateArray).toThrow('Unknown property "imNotWanted"');
+		expect(validate).toThrow('Unknown property "test.imNotWanted"');
 	});
 
 	test('compileSchemaField throws when the required prop is not a boolean', () => {
 		const schema = new Schema({});
 
-		function testValidateArray() {
+		function validate() {
 			schema.compileSchemaField(
 				{
 					type: String,
@@ -30,9 +114,7 @@ describe('Schema Compiler', () => {
 			);
 		}
 
-		expect(testValidateArray).toThrow(
-			'Property named "required" should be of type boolean'
-		);
+		expect(validate).toThrow('The prop "test.required" should be a Boolean');
 	});
 
 	test('compileSchemaField throws when any of the enums prop is not an array', () => {
@@ -48,7 +130,7 @@ describe('Schema Compiler', () => {
 			);
 		}
 
-		expect(testEnum).toThrow('Property named "enum" should be of type Array');
+		expect(testEnum).toThrow('The prop "test.enum" should be an Array');
 	});
 
 	test('compileSchemaField throws when any of the enums is not of the expected type', () => {
@@ -75,11 +157,48 @@ describe('Schema Compiler', () => {
 		}
 
 		expect(testString).toThrow(
-			'All the options inside the enum should be of the correct type'
+			'The enum at "test.enum[0]" doesn\'t match the schema type'
 		);
 
 		expect(testNumber).toThrow(
-			'All the options inside the enum should be of the correct type'
+			'The enum at "test.enum[0]" doesn\'t match the schema type'
 		);
+	});
+
+	test('compileSchema returns a verbose schema', () => {
+		const schema = new Schema({});
+		const shortSchema = {
+			name: String,
+			favoriteStuff: [String],
+			contactInfo: {
+				address: String,
+				phone: Number
+			}
+		};
+
+		expect(schema.compileSchema(shortSchema)).toEqual({
+			name: {
+				type: String
+			},
+			favoriteStuff: {
+				type: Array,
+				child: [
+					{
+						type: String
+					}
+				]
+			},
+			contactInfo: {
+				type: Object,
+				child: {
+					address: {
+						type: String
+					},
+					phone: {
+						type: Number
+					}
+				}
+			}
+		});
 	});
 });

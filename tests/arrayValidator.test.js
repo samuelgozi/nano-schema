@@ -1,7 +1,7 @@
 const Schema = require('../src/index');
 
 describe('Array Validator', () => {
-	test("validateArray method throws when the `array` argument isn't an array", () => {
+	test("Throws when the `array` argument isn't an array", () => {
 		const schema = new Schema({});
 
 		function testValidateArray() {
@@ -13,7 +13,7 @@ describe('Array Validator', () => {
 		);
 	});
 
-	test('validateArray method throws when the `schema` argument is empty(undefined)', () => {
+	test('Throws when the `schema` argument is empty(undefined)', () => {
 		const schema = new Schema({});
 
 		function testValidateArray() {
@@ -22,6 +22,46 @@ describe('Array Validator', () => {
 
 		expect(testValidateArray).toThrow(
 			'Array validator needs the second argument to be the array schema, instead received "undefined"'
+		);
+	});
+
+	test("Doesn't throw when the value is of the correct type", () => {
+		const schema = new Schema({});
+
+		function testValidateArray() {
+			const arraySchema = {
+				type: Array,
+				child: [
+					{
+						type: String
+					}
+				]
+			};
+
+			schema.validateArray(['Hello', 'World!'], arraySchema, 'myArray');
+		}
+
+		expect(testValidateArray).not.toThrow();
+	});
+
+	test("Throws when the value doesn't matches any type in the array schema", () => {
+		const schema = new Schema({});
+
+		function testValidateArray() {
+			const arraySchema = {
+				type: Array,
+				child: [
+					{
+						type: String
+					}
+				]
+			};
+
+			schema.validateArray(['Hello', 42], arraySchema, 'myArray');
+		}
+
+		expect(testValidateArray).toThrow(
+			'The property "myArray[1]" is not of the correct type'
 		);
 	});
 });

@@ -69,8 +69,7 @@ class Schema {
 		// Get the validator of the schema.
 		const typeValidator = validators.get(fieldSchema.type);
 
-		// If no validator was found, then throw an
-		// error since its most likely an incurrect syntax.
+		// If no validator was found, then throw an error.
 		if (typeValidator === undefined) {
 			throw Error(`Invalid type for the field "${fieldName}"`);
 		}
@@ -85,27 +84,27 @@ class Schema {
 
 			// Check if the property is allowed.
 			if (!allowedProps.includes(prop)) {
-				throw Error(`Unknown property "${prop}"`);
+				throw Error(`Unknown property "${fieldName}.${prop}"`);
 			}
 
 			// Verify that 'required' is a Boolean.
 			if (prop === 'required') {
 				if (typeof fieldSchema.required !== 'boolean') {
-					throw Error('Property named "required" should be of type boolean');
+					throw Error(`The prop "${fieldName}.${prop}" should be a Boolean`);
 				}
 			}
 
 			if (prop === 'enum') {
 				// Verify that enum is an Array.
 				if (!Array.isArray(fieldSchema.enum)) {
-					throw Error('Property named "enum" should be of type Array');
+					throw Error(`The prop "${fieldName}.${prop}" should be an Array`);
 				}
 
 				// Verify that all the options inside the the enum are of the correct type.
-				for (let option of fieldSchema.enum) {
-					if (!typeValidator.validateType(option)) {
+				for (let index in fieldSchema.enum) {
+					if (!typeValidator.validateType(fieldSchema.enum[index])) {
 						throw Error(
-							'All the options inside the enum should be of the correct type'
+							`The enum at "${fieldName}.${prop}[${index}]" doesn't match the schema type`
 						);
 					}
 				}
@@ -203,13 +202,13 @@ class Schema {
 	}
 
 	/*
-	 * Valdidates an object and all of its fields against a schema.
+	 * Validates an object and all of its fields against a schema.
 	 */
 	validate(object, schema = this.__schema, fieldParent) {
 		// Used to track which props were validated.
 		const objectProps = new Set(Object.keys(object));
 
-		// Loop over the keys in the schema(no over the object to validate).
+		// Loop over the keys in the schema(not over the object to validate).
 		for (const fieldName in schema) {
 			const fieldValue = object[fieldName];
 			const fieldSchema = schema[fieldName];
@@ -243,7 +242,7 @@ class Schema {
 	 * at least one schema in an array of schemas.
 	 */
 	// TODO: refactor the code to be simpler.
-	validateArray(array, schema, propParent) {
+	validateArray(array, schema, propName) {
 		// Validate the inputs.
 		if (!Array.isArray(array))
 			throw Error(
@@ -257,12 +256,12 @@ class Schema {
 
 		for (const index in array) {
 			const value = array[index];
-			const propName = `[${index}]`;
+			const indexPropName = `[${index}]`;
 			let propItemMatched = false;
 
 			for (const fieldSchema of schema.child) {
 				try {
-					this.validateProp(value, fieldSchema, propName, propParent);
+					this.validateProp(value, fieldSchema, indexPropName, propName);
 
 					// If the validation didn't throw then it means
 					// that the value matched the schema, we can break and move into the next array value.
@@ -281,7 +280,7 @@ class Schema {
 			// If no validation worked(the function would've
 			// returned, and never get here), Then throw an error.
 			throw Error(
-				`The property "${propParent + propName}" is not of the correct type`
+				`The property "${propName + indexPropName}" is not of the correct type`
 			);
 		}
 	}
