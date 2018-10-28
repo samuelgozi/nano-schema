@@ -41,13 +41,13 @@ Lets start with an example:
 
 ```js
 const schema = new Schema({
-	name: String,
-	age: Number,
-	familyMembers: [String],
-	address: {
-		city: String,
-		street: String
-	}
+  name: String,
+  age: Number,
+  familyMembers: [String],
+  address: {
+    city: String,
+    street: String
+  }
 });
 ```
 
@@ -66,13 +66,13 @@ Its very simple, in order to verify that an object passes all the constrains we 
 
 ```js
 schema.validate({
-	name: 'Samuel',
-	age: '23',
-	familyMembers: ['brother name', 'sister name', 'etc'],
-	address: {
-		city: 'Tel-Aviv',
-		address: 'Hertzel!!!'
-	}
+  name: "Samuel",
+  age: "23",
+  familyMembers: ["brother name", "sister name", "etc"],
+  address: {
+    city: "Tel-Aviv",
+    address: "Hertzel!!!"
+  }
 });
 ```
 
@@ -87,13 +87,13 @@ Lets show an example with the schema above.
 
 ```js
 schema.validate({
-	/* ... */
+  /* ... */
 
-	address: {
-		city: 42
+  address: {
+    city: 42
 
-		/* ... */
-	}
+    /* ... */
+  }
 });
 ```
 
@@ -111,10 +111,10 @@ So, lets say we want to make a field be required, heres is how we do that:
 
 ```js
 const schema = new Schema({
-	name: {
-		type: String,
-		required: true
-	}
+  name: {
+    type: String,
+    required: true
+  }
 });
 ```
 
@@ -130,10 +130,10 @@ Lets see an example. Lets provide an invalid property to the "String" type and s
 
 ```js
 const schema = new Schema({
-	name: {
-		type: String,
-		banana: 'banana?'
-	}
+  name: {
+    type: String,
+    banana: "banana?"
+  }
 });
 ```
 
@@ -148,7 +148,7 @@ Here is an example of how we would use the "short" syntax to create a field that
 
 ```js
 const schema = new Schema({
-	name: String
+  name: String
 });
 ```
 
@@ -158,9 +158,9 @@ The verbose version of the same "Field schema" would be:
 
 ```js
 const schema = new Schema({
-	name: {
-		type: String
-	}
+  name: {
+    type: String
+  }
 });
 ```
 
@@ -173,19 +173,19 @@ With the `Object` and `Array` types the short and verbose version will look like
 ```js
 // Verbose
 const schema = new Schema({
-	favoriteMovies: {
-		type: Array,
-		child: [
-			{
-				type: String
-			}
-		]
-	}
+  favoriteMovies: {
+    type: Array,
+    child: [
+      {
+        type: String
+      }
+    ]
+  }
 });
 
 // Short
 const schema = new Schema({
-	favoriteMovies: [String]
+  favoriteMovies: [String]
 });
 ```
 
@@ -194,25 +194,25 @@ const schema = new Schema({
 ```js
 // Verbose
 const schema = new Schema({
-	address: {
-		type: Object,
-		child: {
-			city: {
-				type: String
-			},
-			street: {
-				type: String
-			}
-		}
-	}
+  address: {
+    type: Object,
+    child: {
+      city: {
+        type: String
+      },
+      street: {
+        type: String
+      }
+    }
+  }
 });
 
 // Short
 const schema = new Schema({
-	address: {
-		city: String,
-		street: String
-	}
+  address: {
+    city: String,
+    street: String
+  }
 });
 ```
 
@@ -301,21 +301,21 @@ Here is an example:
 
 ```js
 // This sould br the path to the custom type object we created.
-const customTypeObject = require('./customType.js');
-const Schema = require('schema-validator');
+const customTypeObject = require("./customType.js");
+const Schema = require("schema-validator");
 
-Schema.validators.set('customType', customTypeObject);
+Schema.validators.set("customType", customTypeObject);
 
 // Now the user can use the type by typing:
 const schema = new Schema({
-	username: {
-		type: 'customType'
-	}
+  username: {
+    type: "customType"
+  }
 });
 
 // Or even the short way
 const schema = new Schema({
-	username: 'customType'
+  username: "customType"
 });
 ```
 
