@@ -27,7 +27,7 @@ yarn add https://github.com/samuelgozi/schema-validator
 ## Roadmap
 
 - [x] ~~100% Test coverage~~
-- [ ] (**WIP**)Refactor the whole tests structure, and add tests nested objects/arrays.
+- [x] ~~Refactor the whole tests structure, and add tests nested objects/arrays.~~
 - [x] ~~Export an API for adding custom types.~~
 - [ ] Add documentation and guidelines for contributors.
 - [ ] Transpile everything with babel and add a sizes to the Readme.
@@ -88,12 +88,10 @@ Lets show an example with the schema above.
 ```js
 schema.validate({
   /* ... */
-
   address: {
     city: 42
-
-    /* ... */
   }
+  /* ... */
 });
 ```
 
