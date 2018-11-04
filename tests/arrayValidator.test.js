@@ -64,4 +64,38 @@ describe('Array Validator', () => {
 			'The property "myArray[1]" is not of the correct type'
 		);
 	});
+
+	test("Doesn't throw when the schema doesn't contain any type", () => {
+		const schema = new Schema({});
+
+		function testValidateArray() {
+			const arraySchema = {
+				type: Array,
+				child: []
+			};
+
+			schema.validateArray([], arraySchema, 'myArray');
+		}
+
+		expect(testValidateArray).not.toThrow();
+	});
+
+	test('Throws when the array is required, but left empty', () => {
+		function testValidateArray() {
+			const schema = new Schema({
+				myArray: {
+					type: Array,
+					required: true
+				}
+			});
+
+			schema.validate({
+				myArray: []
+			});
+		}
+
+		expect(testValidateArray).toThrow(
+			'The array "myArray" is required, but left empty'
+		);
+	});
 });

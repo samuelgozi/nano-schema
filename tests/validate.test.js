@@ -57,7 +57,7 @@ describe('Validator(the method)', () => {
 		);
 	});
 
-	test('Throws whith correct path when unallowed properties are present', () => {
+	test('Throws with correct path when unallowed properties are present', () => {
 		const schema = new Schema({});
 
 		function validate() {
@@ -74,6 +74,28 @@ describe('Validator(the method)', () => {
 
 		expect(validate).toThrow(
 			'The object contains invalid properties: parentPropName.name'
+		);
+	});
+
+	test('Throws when an object is required but empty', () => {
+		function validate() {
+			const schema = new Schema({
+				address: {
+					type: Object,
+					required: true,
+					child: {
+						street: {
+							type: String
+						}
+					}
+				}
+			});
+
+			schema.validate({ address: {} });
+		}
+
+		expect(validate).toThrow(
+			'The object "address" is required, but left empty'
 		);
 	});
 });

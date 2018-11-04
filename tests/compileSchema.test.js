@@ -40,11 +40,13 @@ describe('Schema Compiler', () => {
 		});
 
 		expect(schema.compileSchemaField(Array, 'propName')).toEqual({
-			type: Array
+			type: Array,
+			child: []
 		});
 
 		expect(schema.compileSchemaField(Object, 'propName')).toEqual({
-			type: Object
+			type: Object,
+			child: {}
 		});
 	});
 

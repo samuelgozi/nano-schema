@@ -43,6 +43,14 @@ class Schema {
 			fieldSchema = { type: fieldSchema };
 		}
 
+		// Add a `child` prop if its undefined in arrays and objects.
+		if (
+			(fieldSchema.type === Object || fieldSchema.type === Array) &&
+			fieldSchema.child === undefined
+		) {
+			fieldSchema.child = fieldSchema.type === Object ? {} : [];
+		}
+
 		// Check if the value uses a short syntax for the
 		// Array schema, if it is then replace it with the verbose syntax.
 		if (Array.isArray(fieldSchema)) {
@@ -193,47 +201,11 @@ class Schema {
 
 		// If the field is an object then recursively run the validator on it.
 		if (schema.type === Object) {
-			this.validate(value, schema.child, propName);
+			this.validate(value, schema.child, propName, schema.required);
 		}
 
 		if (schema.type === Array) {
 			this.validateArray(value, schema, propName);
-		}
-	}
-
-	/*
-	 * Validates an object and all of its fields against a schema.
-	 */
-	validate(object, schema = this.__schema, fieldParent) {
-		// Used to track which props were validated.
-		const objectProps = new Set(Object.keys(object));
-
-		// Loop over the keys in the schema(not over the object to validate).
-		for (const fieldName in schema) {
-			const fieldValue = object[fieldName];
-			const fieldSchema = schema[fieldName];
-
-			// Validate the prop agains its field schema.
-			this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
-
-			// Remove the prop from the list of properties left in the object.
-			objectProps.delete(fieldName);
-		}
-
-		// If there are still props in the list of properties checked
-		// it means that the object has props that were not specified in the schema.
-		if (objectProps.size > 0) {
-			let invalidProps = Array.from(objectProps);
-
-			// If this is a recursive call, then we append the
-			// parent field name to the prop to make it easier to debug.
-			if (fieldParent !== undefined) {
-				invalidProps = invalidProps.map(prop => fieldParent + '.' + prop);
-			}
-
-			throw Error(
-				'The object contains invalid properties: ' + invalidProps.join(', ')
-			);
 		}
 	}
 
@@ -253,6 +225,16 @@ class Schema {
 			throw Error(
 				`Array validator needs the second argument to be the array schema, instead received "${typeof schema}"`
 			);
+
+		// If all types are allowed, return.
+		if (schema.child.length === 0 && schema.required !== true) {
+			return;
+		}
+
+		// If the array is required but left empty, throw an error.
+		if (schema.required === true && array.length === 0) {
+			throw Error(`The array "${propName}" is required, but left empty`);
+		}
 
 		for (const index in array) {
 			const value = array[index];
@@ -281,6 +263,49 @@ class Schema {
 			// returned, and never get here), Then throw an error.
 			throw Error(
 				`The property "${propName + indexPropName}" is not of the correct type`
+			);
+		}
+	}
+
+	/*
+	 * Validates an object and all of its fields against a schema.
+	 */
+	validate(object, schema = this.__schema, fieldParent, isRequired) {
+		// Used to track which props were validated.
+		const objectProps = new Set(Object.keys(object));
+
+		// If the object is required(it means that
+		// this is a recursive call, and the object type
+		// has required set to true), then throw if it is empty.
+		if (isRequired === true && objectProps.size === 0) {
+			throw Error(`The object "${fieldParent}" is required, but left empty`);
+		}
+
+		// Loop over the keys in the schema(not over the object to validate).
+		for (const fieldName in schema) {
+			const fieldValue = object[fieldName];
+			const fieldSchema = schema[fieldName];
+
+			// Validate the prop agains its field schema.
+			this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
+
+			// Remove the prop from the list of properties left in the object.
+			objectProps.delete(fieldName);
+		}
+
+		// If there are still props in the list of properties checked
+		// it means that the object has props that were not specified in the schema.
+		if (objectProps.size > 0) {
+			let invalidProps = Array.from(objectProps);
+
+			// If this is a recursive call, then we append the
+			// parent field name to the prop to make it easier to debug.
+			if (fieldParent !== undefined) {
+				invalidProps = invalidProps.map(prop => fieldParent + '.' + prop);
+			}
+
+			throw Error(
+				'The object contains invalid properties: ' + invalidProps.join(', ')
 			);
 		}
 	}
