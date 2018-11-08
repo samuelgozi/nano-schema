@@ -72,6 +72,53 @@ describe('Schema Compiler', () => {
 		});
 	});
 
+	test('compileSchema converts nested shortcuts into verbose syntax', () => {
+		const objectSchema = new Schema({
+			address: {
+				type: Object,
+				required: true,
+				child: {
+					street: String
+				}
+			}
+		});
+
+		const objectExpected = {
+			address: {
+				type: Object,
+				required: true,
+				child: {
+					street: {
+						type: String
+					}
+				}
+			}
+		};
+
+		const arraySchema = new Schema({
+			address: {
+				type: Array,
+				required: true,
+				child: [String]
+			}
+		});
+
+		const arrayExpected = {
+			address: {
+				type: Array,
+				required: true,
+				child: [
+					{
+						type: String
+					}
+				]
+			}
+		};
+
+		expect(objectSchema.__schema).toEqual(objectExpected);
+		expect(arraySchema.__schema).toEqual(arrayExpected);
+	});
+
 	test('compileSchemaField correcty identifies objects that are neither shortcuts or types', () => {
 		const schema = new Schema({});
 

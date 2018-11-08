@@ -14,6 +14,11 @@ const validators = new Map([
 	[Object, objectValidator]
 ]);
 
+// Helper to check if a field is a plain Object.
+function isObject(value) {
+	return Object.prototype.toString.apply(value) === '[object Object]';
+}
+
 class Schema {
 	constructor(schema) {
 		// Verify that the input is an Object.
@@ -56,22 +61,29 @@ class Schema {
 		if (Array.isArray(fieldSchema)) {
 			fieldSchema = {
 				type: Array,
-				child: fieldSchema.map((subFieldSchema, index) =>
-					this.compileSchemaField(subFieldSchema, `${fieldName}[${index}]`)
-				)
+				child: fieldSchema
 			};
 		}
 
 		// If the field schema is an object and doesn't have a type
-		// property, then its probably a shortcut, or incorrect syntax.
-		if (
-			Object.prototype.toString.apply(fieldSchema) === '[object Object]' &&
-			fieldSchema.type === undefined
-		) {
+		// property then its an object shortcut, replace is with verbose syntax.
+		if (isObject(fieldSchema) && fieldSchema.type === undefined) {
 			fieldSchema = {
 				type: Object,
-				child: this.compileSchema(fieldSchema, fieldName)
+				child: fieldSchema
 			};
+		}
+
+		// If it is an object, compile its child properties.
+		if (fieldSchema.type === Object) {
+			fieldSchema.child = this.compileSchema(fieldSchema.child, fieldName);
+		}
+
+		// If it is an array, compile its child properties.
+		if (fieldSchema.type === Array) {
+			fieldSchema.child = fieldSchema.child.map((schema, index) =>
+				this.compileSchemaField(schema, `${fieldName}[${index}]`)
+			);
 		}
 
 		// Get the validator of the schema.
@@ -167,6 +179,7 @@ class Schema {
 
 		// Get the validator for the type of the schema.
 		const validator = validators.get(schema.type);
+		if (validator === undefined) console.log(this.__schema);
 
 		// Full path to the field, needed for easier debugging of nested schemas.
 		const propPath =
@@ -179,10 +192,10 @@ class Schema {
 
 			if (!isValid) {
 				if (schema.required === true) {
-					throw Error(`The field "${propPath}" is required`);
+					throw { propPath, message: 'The field is required' };
 				}
 
-				throw Error(`The field "${propPath}" is not of the correct type`);
+				throw { propPath, message: 'The field is not of the correct type' };
 			}
 		}
 
@@ -191,11 +204,10 @@ class Schema {
 			const valueMatchesEnum = schema.enum.includes(value);
 
 			if (!valueMatchesEnum) {
-				throw Error(
-					`The field "${propPath}" can only be one of: ${schema.enum.join(
-						', '
-					)}`
-				);
+				throw {
+					propPath,
+					message: `The field can only be one of: ${schema.enum.join(', ')}`
+				};
 			}
 		}
 
@@ -233,8 +245,11 @@ class Schema {
 
 		// If the array is required but left empty, throw an error.
 		if (schema.required === true && array.length === 0) {
-			throw Error(`The array "${propName}" is required, but left empty`);
+			throw { propPath: propName, message: 'The field is required' };
 		}
+
+		// Map of the propnames and its errors(if any).
+		const errors = new Map();
 
 		for (const index in array) {
 			const value = array[index];
@@ -260,9 +275,10 @@ class Schema {
 			if (propItemMatched) continue;
 
 			// If no validation worked(the function would've
-			// returned, and never get here), Then throw an error.
-			throw Error(
-				`The property "${propName + indexPropName}" is not of the correct type`
+			// returned, and never get here), Then add en error to the errors set.
+			throw errors.set(
+				propName + indexPropName,
+				'The field is not of the correct type'
 			);
 		}
 	}
@@ -271,6 +287,8 @@ class Schema {
 	 * Validates an object and all of its fields against a schema.
 	 */
 	validate(object, schema = this.__schema, fieldParent, isRequired) {
+		let errors = new Map();
+
 		// Used to track which props were validated.
 		const objectProps = new Set(Object.keys(object));
 
@@ -286,8 +304,21 @@ class Schema {
 			const fieldValue = object[fieldName];
 			const fieldSchema = schema[fieldName];
 
-			// Validate the prop agains its field schema.
-			this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
+			try {
+				// Validate the prop agains its field schema.
+				this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
+			} catch (error) {
+				// If this is not a validatio error, then throw it.
+				if (error.propPath === undefined) throw error;
+
+				// Else it is a validation error then add it to the errors list.
+				if (error instanceof Map) {
+					errors = new Map([...errors, ...error]);
+					continue;
+				}
+
+				errors.set(error.propPath, error.message);
+			}
 
 			// Remove the prop from the list of properties left in the object.
 			objectProps.delete(fieldName);
@@ -304,10 +335,13 @@ class Schema {
 				invalidProps = invalidProps.map(prop => fieldParent + '.' + prop);
 			}
 
-			throw Error(
-				'The object contains invalid properties: ' + invalidProps.join(', ')
-			);
+			for (const prop of invalidProps) {
+				errors.set(prop, 'Unknown property');
+			}
 		}
+
+		// If there are errors in the set, throw it.
+		if (errors.size > 0) throw errors;
 	}
 }
 

@@ -47,7 +47,7 @@ describe('Array Validator', () => {
 	test("Throws when the value doesn't matches any type in the array schema", () => {
 		const schema = new Schema({});
 
-		function testValidateArray() {
+		function validate() {
 			const arraySchema = {
 				type: Array,
 				child: [
@@ -57,11 +57,15 @@ describe('Array Validator', () => {
 				]
 			};
 
-			schema.validateArray(['Hello', 42], arraySchema, 'myArray');
+			try {
+				schema.validateArray(['Hello', 42], arraySchema, 'myArray');
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(testValidateArray).toThrow(
-			'The property "myArray[1]" is not of the correct type'
+		expect(validate()).toEqual(
+			new Map([['myArray[1]', 'The field is not of the correct type']])
 		);
 	});
 
@@ -81,7 +85,7 @@ describe('Array Validator', () => {
 	});
 
 	test('Throws when the array is required, but left empty', () => {
-		function testValidateArray() {
+		function validate() {
 			const schema = new Schema({
 				myArray: {
 					type: Array,
@@ -89,13 +93,15 @@ describe('Array Validator', () => {
 				}
 			});
 
-			schema.validate({
-				myArray: []
-			});
+			try {
+				schema.validate({
+					myArray: []
+				});
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(testValidateArray).toThrow(
-			'The array "myArray" is required, but left empty'
-		);
+		expect(validate()).toEqual(new Map([['myArray', 'The field is required']]));
 	});
 });

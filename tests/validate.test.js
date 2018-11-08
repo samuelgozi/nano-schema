@@ -16,12 +16,14 @@ describe('Validator(the method)', () => {
 				}
 			};
 
-			schema.validate(obj, schemaObj);
+			try {
+				schema.validate(obj, schemaObj);
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(validate).toThrow(
-			'The object contains invalid properties: unwanted'
-		);
+		expect(validate()).toEqual(new Map([['unwanted', 'Unknown property']]));
 	});
 
 	test('Throws when a nested object has an error with correct path to prop', () => {
@@ -49,11 +51,15 @@ describe('Validator(the method)', () => {
 				}
 			};
 
-			schema.validate(obj, schemaObj);
+			try {
+				schema.validate(obj, schemaObj);
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(validate).toThrow(
-			'The field "name.last" is not of the correct type'
+		expect(validate()).toEqual(
+			new Map([['name.last', 'The field is not of the correct type']])
 		);
 	});
 
@@ -69,11 +75,15 @@ describe('Validator(the method)', () => {
 				}
 			};
 
-			schema.validate(obj, schemaObj, 'parentPropName');
+			try {
+				schema.validate(obj, schemaObj, 'parentPropName');
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(validate).toThrow(
-			'The object contains invalid properties: parentPropName.name'
+		expect(validate()).toEqual(
+			new Map([['parentPropName.name', 'Unknown property']])
 		);
 	});
 
@@ -98,4 +108,40 @@ describe('Validator(the method)', () => {
 			'The object "address" is required, but left empty'
 		);
 	});
+
+	// test('Multiple Errors are merged correctly', () => {
+	// 	function validate() {
+	// 		const schema = new Schema({
+	// 			name: String,
+	// 			address: {
+	// 				type: Object,
+	// 				required: true,
+	// 				child: {
+	// 					street: String
+	// 				}
+	// 			}
+	// 		});
+
+	// 		const obj = {
+	// 			name: 42,
+	// 			address: {
+	// 				street: []
+	// 			}
+	// 		};
+
+	// 		try {
+	// 			schema.validate(obj);
+	// 		} catch (e) {
+	// 			if (e.propPath === undefined) throw e;
+	// 			return e;
+	// 		}
+	// 	}
+
+	// 	const expected = new Map([
+	// 		['name', 'incorrect type'],
+	// 		['address.street', 'incorrect type']
+	// 	]);
+
+	// 	expect(validate()).toEqual(expected);
+	// });
 });

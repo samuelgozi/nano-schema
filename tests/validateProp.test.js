@@ -14,7 +14,10 @@ describe('Validate Property', () => {
 			);
 		}
 
-		expect(validate).toThrow('The field "propName" is not of the correct type');
+		expect(validate).toThrow({
+			propPath: 'propName',
+			message: 'The field is not of the correct type'
+		});
 	});
 
 	test('Throws when a prop is required but undefined', () => {
@@ -31,7 +34,10 @@ describe('Validate Property', () => {
 			);
 		}
 
-		expect(validate).toThrow('The field "propName" is required');
+		expect(validate).toThrow({
+			propPath: 'propName',
+			message: 'The field is required'
+		});
 	});
 
 	test("Doesn't throw when a prop is not required and is undefined", () => {
@@ -65,9 +71,10 @@ describe('Validate Property', () => {
 				);
 			}
 
-			expect(validate).toThrow(
-				'The field "propName" can only be one of: hello, world?'
-			);
+			expect(validate).toThrow({
+				propPath: 'propName',
+				message: 'The field can only be one of: hello, world?'
+			});
 		});
 
 		test("Doesn't throw when the field isn't required and the value is empty", () => {
@@ -92,22 +99,26 @@ describe('Validate Property', () => {
 		const schema = new Schema({});
 
 		function validate() {
-			schema.validateProp(
-				['Hello', 42],
-				{
-					type: Array,
-					child: [
-						{
-							type: String
-						}
-					]
-				},
-				'propName'
-			);
+			try {
+				schema.validateProp(
+					['Hello', 42],
+					{
+						type: Array,
+						child: [
+							{
+								type: String
+							}
+						]
+					},
+					'propName'
+				);
+			} catch (e) {
+				return e;
+			}
 		}
 
-		expect(validate).toThrow(
-			'The property "propName[1]" is not of the correct type'
+		expect(validate()).toEqual(
+			new Map([['propName[1]', 'The field is not of the correct type']])
 		);
 	});
 
@@ -116,31 +127,35 @@ describe('Validate Property', () => {
 			const schema = new Schema({});
 
 			function validate() {
-				schema.validateProp(
-					{
-						firstLayer: {
-							name: 42
-						}
-					},
-					{
-						type: Object,
-						child: {
+				try {
+					schema.validateProp(
+						{
 							firstLayer: {
-								type: Object,
-								child: {
-									name: {
-										type: String
+								name: 42
+							}
+						},
+						{
+							type: Object,
+							child: {
+								firstLayer: {
+									type: Object,
+									child: {
+										name: {
+											type: String
+										}
 									}
 								}
 							}
-						}
-					},
-					'propName'
-				);
+						},
+						'propName'
+					);
+				} catch (e) {
+					return e;
+				}
 			}
 
-			expect(validate).toThrow(
-				'The field "firstLayer.name" is not of the correct type'
+			expect(validate()).toEqual(
+				new Map([['firstLayer.name', 'The field is not of the correct type']])
 			);
 		});
 
@@ -148,29 +163,35 @@ describe('Validate Property', () => {
 			const schema = new Schema({});
 
 			function validate() {
-				schema.validateProp(
-					{
-						firstLayer: {}
-					},
-					{
-						type: Object,
-						child: {
-							firstLayer: {
-								type: Object,
-								child: {
-									name: {
-										type: String,
-										required: true
+				try {
+					schema.validateProp(
+						{
+							firstLayer: {}
+						},
+						{
+							type: Object,
+							child: {
+								firstLayer: {
+									type: Object,
+									child: {
+										name: {
+											type: String,
+											required: true
+										}
 									}
 								}
 							}
-						}
-					},
-					'propName'
-				);
+						},
+						'propName'
+					);
+				} catch (e) {
+					return e;
+				}
 			}
 
-			expect(validate).toThrow('The field "firstLayer.name" is required');
+			expect(validate()).toEqual(
+				new Map([['firstLayer.name', 'The field is required']])
+			);
 		});
 	});
 });
