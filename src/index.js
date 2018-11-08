@@ -179,8 +179,6 @@ class Schema {
 
 		// Get the validator for the type of the schema.
 		const validator = validators.get(schema.type);
-		if (validator === undefined) console.log(this.__schema);
-
 		// Full path to the field, needed for easier debugging of nested schemas.
 		const propPath =
 			parentProp !== undefined ? parentProp + '.' + propName : propName;
