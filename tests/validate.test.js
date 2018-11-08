@@ -108,40 +108,4 @@ describe('Validator(the method)', () => {
 			'The object "address" is required, but left empty'
 		);
 	});
-
-	// test('Multiple Errors are merged correctly', () => {
-	// 	function validate() {
-	// 		const schema = new Schema({
-	// 			name: String,
-	// 			address: {
-	// 				type: Object,
-	// 				required: true,
-	// 				child: {
-	// 					street: String
-	// 				}
-	// 			}
-	// 		});
-
-	// 		const obj = {
-	// 			name: 42,
-	// 			address: {
-	// 				street: []
-	// 			}
-	// 		};
-
-	// 		try {
-	// 			schema.validate(obj);
-	// 		} catch (e) {
-	// 			if (e.propPath === undefined) throw e;
-	// 			return e;
-	// 		}
-	// 	}
-
-	// 	const expected = new Map([
-	// 		['name', 'incorrect type'],
-	// 		['address.street', 'incorrect type']
-	// 	]);
-
-	// 	expect(validate()).toEqual(expected);
-	// });
 });

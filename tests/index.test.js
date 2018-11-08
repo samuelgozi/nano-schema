@@ -115,6 +115,42 @@ describe('Creating a schema', () => {
 
 		expect(createNewSchema).not.toThrow();
 	});
+
+	test('Multiple Errors are merged correctly', () => {
+		function validate() {
+			const schema = new Schema({
+				name: String,
+				address: {
+					type: Object,
+					required: true,
+					child: {
+						street: String
+					}
+				}
+			});
+
+			const obj = {
+				name: 42,
+				address: {
+					street: []
+				}
+			};
+
+			try {
+				schema.validate(obj);
+			} catch (e) {
+				if (!(e instanceof Map)) throw e;
+				return e;
+			}
+		}
+
+		const expected = new Map([
+			['name', 'The field is not of the correct type'],
+			['address.street', 'The field is not of the correct type']
+		]);
+
+		expect(validate()).toEqual(expected);
+	});
 });
 
 describe('Custom validators', () => {

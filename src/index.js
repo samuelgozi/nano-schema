@@ -306,15 +306,21 @@ class Schema {
 				// Validate the prop agains its field schema.
 				this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
 			} catch (error) {
-				// If this is not a validatio error, then throw it.
-				if (error.propPath === undefined) throw error;
-
 				// Else it is a validation error then add it to the errors list.
 				if (error instanceof Map) {
 					errors = new Map([...errors, ...error]);
+
+					// Remove the prop from the list of properties left in the object.
+					objectProps.delete(fieldName);
+
+					// Jump to the next loop
 					continue;
 				}
 
+				// If this is not a validatio error, then throw it.
+				if (error.propPath === undefined) throw error;
+
+				// Add the error into the errors set.
 				errors.set(error.propPath, error.message);
 			}
 
