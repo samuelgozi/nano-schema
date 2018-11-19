@@ -228,6 +228,7 @@ Each type has additional options, this is not a final list, and more will be add
   An empty string counts an empty, and will throw.
 - `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
   All the enum options must of the correct type or an error will be thrown on schema creation.
+- `test` - RegExp. When specified, the string must match the regular expression in order to pass validation.
 
 **`Number`**
 

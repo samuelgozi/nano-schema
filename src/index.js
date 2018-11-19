@@ -122,7 +122,9 @@ class Schema {
 
 				// Verify that all the options inside the the enum are of the correct type.
 				for (let index in fieldSchema.enum) {
-					if (!typeValidator.validateType(fieldSchema.enum[index])) {
+					if (
+						!typeValidator.validateType(fieldSchema.enum[index], fieldSchema)
+					) {
 						throw Error(
 							`The enum at "${fieldName}.${prop}[${index}]" doesn't match the schema type`
 						);
@@ -133,7 +135,7 @@ class Schema {
 
 		// Validate the compiled field schema.
 		if (typeValidator.validateSchema !== undefined) {
-			typeValidator.validateSchema(fieldSchema);
+			typeValidator.validateSchema(fieldSchema, fieldName);
 		}
 
 		// finaly return the compiled schema
