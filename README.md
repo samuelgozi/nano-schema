@@ -52,17 +52,17 @@ const schema = new Schema({
 ```
 
 Lets break it down.
-The schema we created above will put the next constrains in place:
+The schema we created above will put the next constraints in place:
 
 - `object.name` - Can only be a String
 - `object.age` - Can only be a Number
 - `object.familyMembers` - Can only be an Array, and its list items can only be of type String.
 - `object.address` - Can only be an Object, and its only allowed props are `city` and `street` and both on them must be of type String.
-  In this example, there are no other constrains on the schema, non of the fields is required or has any additional restrictions.
+  In this example, there are no other constraints on the schema, non of the fields is required or has any additional restrictions.
 
 ### Now, how do I validate my object?
 
-Its very simple, in order to verify that an object passes all the constrains we need to use the `validate` method:
+Its very simple, in order to verify that an object passes all the constraints we need to use the `validate` method:
 
 ```js
 schema.validate({
