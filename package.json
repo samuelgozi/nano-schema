@@ -1,6 +1,6 @@
 {
   "name": "schema-validator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Javascript schema validator for objects",
   "main": "src/index.js",
   "repository": "https://github.com/samuelgozi/schema-validator",
