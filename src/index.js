@@ -94,13 +94,13 @@ class Schema {
 			throw Error(`Invalid type for the field "${fieldName}"`);
 		}
 
-		// Validate that the schema contain only allowed values.
+		// Get an array of the allowed props in the schema.
 		const allowedProps = typeValidator.allowedProps;
 
 		for (let prop in fieldSchema) {
-			// If the property is "type" then continue
-			// to the next iteration, its always required.
-			if (prop === 'type') continue;
+			// If the property is "type" then continue to the next iteration.
+			// If the prop starts with two underscores then skip it, it should be ignored.
+			if (prop === 'type' || prop.startsWith('__')) continue;
 
 			// Check if the property is allowed.
 			if (!allowedProps.includes(prop)) {
@@ -151,10 +151,6 @@ class Schema {
 		const compiledSchema = {};
 
 		for (const fieldName in schema) {
-			// Skip over ignored props.
-			// Prop that need to be ignored should have a name that starts with two underscores.
-			if (fieldName.startsWith('__')) continue;
-
 			// Compose a field name including the parent for better debugging.
 			const fieldPath =
 				parentField !== undefined ? parentField + '.' + fieldName : fieldName;

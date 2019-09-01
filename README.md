@@ -344,9 +344,9 @@ Map(2) {
 
 ## Add metadata that will be ignored by the `Schema` constructor.
 
-Sometimes when we might want to have some hidden data when writing a schema.
+Sometimes when we might want to fields in a schema.
 For example, if we want to use the schema declaration for other uses, like passing it to a helper that creates forms.
-There is a way for doing that. All properties that start with a double underscore("\_\_") will be ignored when creating a validator for the schema, however, they will not be allowed in the objects itself.
+All type options that start with a double underscore("\_\_") will be ignored when creating a validator for the schema, however, they will not be allowed in the objects itself, nor as regular properties.
 
 Code example:
 
@@ -363,7 +363,7 @@ const schema = new Schema({
 });
 ```
 
-This object will be read by the `Schema` constructor as if it were:
+This type schema will be read by the `Schema` compiler as if it were:
 
 ```js
 const schema = new Schema({
@@ -375,7 +375,6 @@ const schema = new Schema({
 ```
 
 The validation step will be identical with both.
-And you are not restricted to the name "formData", as long as it starts with two underscores("\_\_") it will be ignored.
 
 ## Can I contribute?
 

@@ -251,45 +251,27 @@ describe('Schema Compiler', () => {
 		});
 	});
 
-	test('compileSchema ignores properties starting with two underscores "__"', () => {
+	test('compileSchema ignores type options starting with two underscores "__"', () => {
 		const schema = new Schema({});
 		const shortSchema = {
-			name: String,
-			favoriteStuff: [String],
-			__ignored: 'prop',
+			name: {
+				type: String,
+				__meta: {
+					this: 'should be ignored'
+				}
+			},
 			contactInfo: {
 				address: String,
-				phone: Number,
-				__meta: {
-					stuff: 'here',
-					should: 'be ignored'
+				phone: {
+					type: Number,
+					__meta: {
+						stuff: 'here',
+						should: 'be ignored'
+					}
 				}
 			}
 		};
 
-		expect(schema.compileSchema(shortSchema)).toEqual({
-			name: {
-				type: String
-			},
-			favoriteStuff: {
-				type: Array,
-				child: [
-					{
-						type: String
-					}
-				]
-			},
-			contactInfo: {
-				type: Object,
-				child: {
-					address: {
-						type: String
-					},
-					phone: {
-						type: Number
-					}
-				}
-			}
-		});
+		expect(() => schema.compileSchema(shortSchema)).not.toThrow();
 	});
 });
