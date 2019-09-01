@@ -99,7 +99,7 @@ class Schema {
 
 		for (let prop in fieldSchema) {
 			// If the property is "type" then continue
-			// to the next iteration, its allways required.
+			// to the next iteration, its always required.
 			if (prop === 'type') continue;
 
 			// Check if the property is allowed.
@@ -138,8 +138,8 @@ class Schema {
 			typeValidator.validateSchema(fieldSchema, fieldName);
 		}
 
-		// finaly return the compiled schema
-		// (or the original if it wasen't changed)
+		// finally return the compiled schema
+		// (or the original if it wasn't changed)
 		return fieldSchema;
 	}
 
@@ -151,7 +151,7 @@ class Schema {
 		const compiledSchema = {};
 
 		for (const fieldName in schema) {
-			// Compose a fieldname including the parent for better debuging.
+			// Compose a field name including the parent for better debugging.
 			const fieldPath =
 				parentField !== undefined ? parentField + '.' + fieldName : fieldName;
 
@@ -248,7 +248,7 @@ class Schema {
 			throw { propPath: propName, message: 'The field is required' };
 		}
 
-		// Map of the propnames and its errors(if any).
+		// Map of the property names and its errors(if any).
 		const errors = new Map();
 
 		for (const index in array) {
@@ -271,7 +271,7 @@ class Schema {
 				}
 			}
 
-			// If the current propert matched a valid schema, then move into the next prop.
+			// If the current property matched a valid schema, then move into the next prop.
 			if (propItemMatched) continue;
 
 			// If no validation worked(the function would've
@@ -305,7 +305,7 @@ class Schema {
 			const fieldSchema = schema[fieldName];
 
 			try {
-				// Validate the prop agains its field schema.
+				// Validate the prop against its field schema.
 				this.validateProp(fieldValue, fieldSchema, fieldName, fieldParent);
 			} catch (error) {
 				// Else it is a validation error then add it to the errors list.
@@ -319,7 +319,7 @@ class Schema {
 					continue;
 				}
 
-				// If this is not a validatio error, then throw it.
+				// If this is not a validation error, then throw it.
 				if (error.propPath === undefined) throw error;
 
 				// Add the error into the errors set.

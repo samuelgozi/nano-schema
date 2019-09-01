@@ -234,6 +234,7 @@ Each type has additional options, this is not a final list, and more will be add
 - `required` - Boolean. If set to true, the field cannot be left empty, or else an error will be thrown on validation.
 - `enum` - Array. Should be an array of strings that are allowed. Any other string will throw an error at validation.
   All the enum options must of the correct type or an error will be thrown on schema creation.
+- `coerce` - Should the validator try to coerce the value into a number? This could be very helpful when trying to validate the values of a form.
 
 **`Boolean`.**
 
@@ -310,6 +311,35 @@ const schema = new Schema({
 const schema = new Schema({
   username: "customType"
 });
+```
+
+## Handling errors.
+
+When the validation fails, a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) will be returned, in which the `key` will be the name of the property that had an error, and the `value` will be the error message.
+
+An example:
+
+```js
+const schema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  age: Number
+});
+
+schema.validate({
+  age: ["This is not a number"]
+});
+```
+
+The code above will throw a map:
+
+```
+Map(2) {
+	"name" => "The field is required",
+	"age" => "The field is not of the correct type"
+}
 ```
 
 ## Can I contribute?
