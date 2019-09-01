@@ -151,6 +151,10 @@ class Schema {
 		const compiledSchema = {};
 
 		for (const fieldName in schema) {
+			// Skip over ignored props.
+			// Prop that need to be ignored should have a name that starts with two underscores.
+			if (fieldName.startsWith('__')) continue;
+
 			// Compose a field name including the parent for better debugging.
 			const fieldPath =
 				parentField !== undefined ? parentField + '.' + fieldName : fieldName;

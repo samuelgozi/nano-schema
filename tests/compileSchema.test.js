@@ -119,7 +119,7 @@ describe('Schema Compiler', () => {
 		expect(arraySchema.__schema).toEqual(arrayExpected);
 	});
 
-	test('compileSchemaField correcty identifies objects that are neither shortcuts or types', () => {
+	test('compileSchemaField correctly identifies objects that are neither shortcuts or types', () => {
 		const schema = new Schema({});
 
 		function testSyntax() {
@@ -134,7 +134,7 @@ describe('Schema Compiler', () => {
 		expect(testSyntax).toThrow('Invalid type for the field "propName.name"');
 	});
 
-	test('compileSchemaField throws when there are unknown/unallowed props', () => {
+	test('compileSchemaField throws when there are unknown/un-allowed props', () => {
 		const schema = new Schema({});
 
 		function validate() {
@@ -222,6 +222,48 @@ describe('Schema Compiler', () => {
 			contactInfo: {
 				address: String,
 				phone: Number
+			}
+		};
+
+		expect(schema.compileSchema(shortSchema)).toEqual({
+			name: {
+				type: String
+			},
+			favoriteStuff: {
+				type: Array,
+				child: [
+					{
+						type: String
+					}
+				]
+			},
+			contactInfo: {
+				type: Object,
+				child: {
+					address: {
+						type: String
+					},
+					phone: {
+						type: Number
+					}
+				}
+			}
+		});
+	});
+
+	test('compileSchema ignores properties starting with two underscores "__"', () => {
+		const schema = new Schema({});
+		const shortSchema = {
+			name: String,
+			favoriteStuff: [String],
+			__ignored: 'prop',
+			contactInfo: {
+				address: String,
+				phone: Number,
+				__meta: {
+					stuff: 'here',
+					should: 'be ignored'
+				}
 			}
 		};
 

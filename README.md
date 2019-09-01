@@ -342,6 +342,41 @@ Map(2) {
 }
 ```
 
+## Add metadata that will be ignored by the `Schema` constructor.
+
+Sometimes when we might want to have some hidden data when writing a schema.
+For example, if we want to use the schema declaration for other uses, like passing it to a helper that creates forms.
+There is a way for doing that. All properties that start with a double underscore("\_\_") will be ignored when creating a validator for the schema, however, they will not be allowed in the objects itself.
+
+Code example:
+
+```js
+const schema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    __formData: {
+      placeholder: "Please enter your full name...",
+      className: "form-control"
+    }
+  }
+});
+```
+
+This object will be read by the `Schema` constructor as if it were:
+
+```js
+const schema = new Schema({
+	name: {
+		type: String,
+		required: true
+	}
+}
+```
+
+The validation step will be identical with both.
+And you are not restricted to the name "formData", as long as it starts with two underscores("\_\_") it will be ignored.
+
 ## Can I contribute?
 
 Yes, feel free to help. I tried to document the code as much as possible, and make it as clean as possible, and it is very easy to extend with additional types.
