@@ -16,11 +16,7 @@ describe('Strings', () => {
 		expect(stringValidator.validateType([])).toEqual(false);
 	});
 
-	test("Empty strings don't pass validation", () => {
-		expect(stringValidator.validateType('')).toEqual(false);
-	});
-
-	test('Throws only when test is not a RegExp', () => {
+	test('Throws when test is not a RegExp', () => {
 		function invalid() {
 			new Schema({
 				name: {
@@ -54,5 +50,9 @@ describe('Strings', () => {
 		expect(
 			stringValidator.validateType('Slim Shady', { test: /Slim Shady/ })
 		).toEqual(true);
+	});
+
+	test('IsEmpty returns true when is passed an empty string', () => {
+		expect(stringValidator.isEmpty('')).toEqual(true);
 	});
 });

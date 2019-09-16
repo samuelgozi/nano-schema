@@ -19,11 +19,15 @@ function isObject(value) {
 	return Object.prototype.toString.apply(value) === '[object Object]';
 }
 
+// Default test when a field is is required.
+function isEmpty(value) {
+	return value === undefined || value === null;
+}
+
 class Schema {
 	constructor(schema) {
 		// Verify that the input is an Object.
-		if (Object.prototype.toString.call(schema) !== '[object Object]')
-			throw Error('Schema must be an object');
+		if (typeof schema !== 'object') throw Error('Schema must be an object');
 
 		// Validate that the schema is formatted correctly
 		// and compile shortcuts into the verbose syntax.
@@ -173,42 +177,43 @@ class Schema {
 	 * Validate a value against a field schema.
 	 */
 	validateProp(value, schema, propName, parentProp) {
-		// If the value is empty(undefined), and isn't required,
-		// then there is no need for additional tests, just return.
-		if (value === undefined && schema.required !== true) {
-			return;
-		}
-
 		// Get the validator for the type of the schema.
 		const validator = validators.get(schema.type);
-		// Full path to the field, needed for easier debugging of nested schemas.
+
+		// Full path to the field, used in errors to point to the prop.
 		const propPath =
 			parentProp !== undefined ? parentProp + '.' + propName : propName;
 
-		// If the field is not undefined or it is required, then validate its type.
-		// We do this check because we are iterating over the schema, not the object itself.
-		if (value !== undefined || schema.required === true) {
-			const isValid = validator.validateType(value, schema);
+		// Check if the field is empty.
+		// If the validator has a custom method
+		// for this then use it instead of the default one.
+		const fieldIsEmpty = validator.isEmpty || isEmpty;
 
-			if (!isValid) {
-				if (schema.required === true) {
-					throw { propPath, message: 'The field is required' };
-				}
+		if (fieldIsEmpty(value)) {
+			// If the value is empty and isn't required,
+			// then there is no need for additional tests, just return.
+			if (schema.required !== true) return;
 
-				throw { propPath, message: 'The field is not of the correct type' };
-			}
+			// Else, if it is required, throw!
+			throw { propPath, message: 'The field is required' };
 		}
 
 		// Check the the value matches an 'enum' when enum is specified.
 		if (schema.enum !== undefined) {
-			const valueMatchesEnum = schema.enum.includes(value);
-
-			if (!valueMatchesEnum) {
+			if (!schema.enum.includes(value)) {
 				throw {
 					propPath,
 					message: `The field can only be one of: ${schema.enum.join(', ')}`
 				};
 			}
+
+			// If it didn't throw it means that it matched an enum, and we can finish here
+			return;
+		}
+
+		// Validate the value of the prop.
+		if (!validator.validateType(value, schema)) {
+			throw { propPath, message: 'The field is not of the correct type' };
 		}
 
 		// If the field is an object then recursively run the validator on it.

@@ -20,7 +20,7 @@ describe('Validate Property', () => {
 		});
 	});
 
-	test('Throws when a prop is required but undefined', () => {
+	test('Throws when a prop is required but empty', () => {
 		const schema = new Schema({});
 
 		function validate() {
@@ -40,12 +40,31 @@ describe('Validate Property', () => {
 		});
 	});
 
-	test("Doesn't throw when a prop is not required and is undefined", () => {
+	test("Doesn't throw when a prop is not required but is empty", () => {
 		const schema = new Schema({});
 
 		function validate() {
+			// undefined
 			schema.validateProp(
 				undefined,
+				{
+					type: String
+				},
+				'propName'
+			);
+
+			// null
+			schema.validateProp(
+				null,
+				{
+					type: String
+				},
+				'propName'
+			);
+
+			// empty string
+			schema.validateProp(
+				'',
 				{
 					type: String
 				},
@@ -54,6 +73,23 @@ describe('Validate Property', () => {
 		}
 
 		expect(validate).not.toThrow();
+	});
+
+	test('Uses custom IsEmpty specified in types', () => {
+		const schema = new Schema({});
+
+		function validate() {
+			schema.validateProp(
+				'',
+				{
+					type: String,
+					required: true
+				},
+				'propName'
+			);
+		}
+
+		expect(validate).toThrow(/The field is required/);
 	});
 
 	describe('Enums', () => {
@@ -159,7 +195,7 @@ describe('Validate Property', () => {
 			);
 		});
 
-		test('Throws when a required field is undefiend', () => {
+		test('Throws when a required field is empty', () => {
 			const schema = new Schema({});
 
 			function validate() {
@@ -193,5 +229,24 @@ describe('Validate Property', () => {
 				new Map([['firstLayer.name', 'The field is required']])
 			);
 		});
+	});
+});
+
+describe('Error message', () => {
+	test('Is correct when field is required but empty, and type is incorrect', () => {
+		const schema = new Schema({});
+
+		function validate() {
+			schema.validateProp(
+				false,
+				{
+					type: Number,
+					required: true
+				},
+				'IM NOT A NUMBER!'
+			);
+		}
+
+		expect(validate).toThrow(/The field is not of the correct type/);
 	});
 });
