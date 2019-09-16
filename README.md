@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/samuelgozi/schema-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/samuelgozi/schema-validator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-# schema-validator
+# Nano-schema
 
 As the name suggest this library helps you validate javascript objects agains a schema.
 The goal of the project was to create a lightweight, performant and extensible library with no dependencies.
@@ -15,13 +15,13 @@ if you would like to install it you should use the github link as shown below.
 And if you have an idea for a name, feel free to open an issue.
 
 ```
-npm install https://github.com/samuelgozi/schema-validator
+npm install nano-schema
 ```
 
 or if (like me) you use Yarn:
 
 ```
-yarn add https://github.com/samuelgozi/schema-validator
+yarn add nano-schema
 ```
 
 ## Roadmap
