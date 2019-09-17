@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/samuelgozi/schema-validator.svg?branch=master)](https://travis-ci.org/samuelgozi/schema-validator)
-[![codecov](https://codecov.io/gh/samuelgozi/schema-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/samuelgozi/schema-validator)
+[![Build Status](https://travis-ci.org/samuelgozi/nano-schema.svg?branch=master)](https://travis-ci.org/samuelgozi/schema-validator)
+[![codecov](https://codecov.io/gh/samuelgozi/nano-schema/branch/master/graph/badge.svg)](https://codecov.io/gh/samuelgozi/schema-validator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 # Nano-schema
