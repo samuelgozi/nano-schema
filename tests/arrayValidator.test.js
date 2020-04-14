@@ -33,9 +33,9 @@ describe('Array Validator', () => {
 				type: Array,
 				child: [
 					{
-						type: String
-					}
-				]
+						type: String,
+					},
+				],
 			};
 
 			schema.validateArray(['Hello', 'World!'], arraySchema, 'myArray');
@@ -52,9 +52,9 @@ describe('Array Validator', () => {
 				type: Array,
 				child: [
 					{
-						type: String
-					}
-				]
+						type: String,
+					},
+				],
 			};
 
 			try {
@@ -75,7 +75,7 @@ describe('Array Validator', () => {
 		function testValidateArray() {
 			const arraySchema = {
 				type: Array,
-				child: []
+				child: [],
 			};
 
 			schema.validateArray([], arraySchema, 'myArray');
@@ -89,13 +89,13 @@ describe('Array Validator', () => {
 			const schema = new Schema({
 				myArray: {
 					type: Array,
-					required: true
-				}
+					required: true,
+				},
 			});
 
 			try {
 				schema.validate({
-					myArray: []
+					myArray: [],
 				});
 			} catch (e) {
 				return e;

@@ -1,6 +1,6 @@
 {
   "name": "nano-schema",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "Javascript schema validator for objects",
   "main": "src/index.js",
   "repository": "https://github.com/samuelgozi/nano-schema",

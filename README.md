@@ -4,15 +4,11 @@
 
 # Nano-schema
 
-As the name suggest this library helps you validate javascript objects agains a schema.
-The goal of the project was to create a lightweight, performant and extensible library with no dependencies.
-Currently the size of the library, compressed and gzipped(without bundling) is: **1.25KB**
+Nano schema helps you validate that javascript objects match a schema.
+The goal of the project was to create a lightweight, high performance and extensible library with no dependencies.
+The current size of this library is: **1.25KB**
 
 ## Installation
-
-I stil haven't decided on a name, so an NPM package doesn't exist,
-if you would like to install it you should use the github link as shown below.
-And if you have an idea for a name, feel free to open an issue.
 
 ```
 npm install nano-schema
@@ -23,17 +19,6 @@ or if (like me) you use Yarn:
 ```
 yarn add nano-schema
 ```
-
-## Roadmap
-
-- [x] ~~100% Test coverage~~
-- [x] ~~Refactor the whole tests structure, and add tests nested objects/arrays.~~
-- [x] ~~Export an API for adding custom types.~~
-- [ ] Add documentation and guidelines for contributors.
-- [ ] Transpile everything with babel and add a sizes to the Readme.
-- [x] ~~Configure CI/CD.~~
-- [ ] Make a nice logo.
-- [ ] Move the documentation into the GitHub Wiki.
 
 ## How to use
 
@@ -46,8 +31,8 @@ const schema = new Schema({
   familyMembers: [String],
   address: {
     city: String,
-    street: String
-  }
+    street: String,
+  },
 });
 ```
 
@@ -71,14 +56,14 @@ schema.validate({
   familyMembers: ["brother name", "sister name", "etc"],
   address: {
     city: "Tel-Aviv",
-    address: "Hertzel!!!"
-  }
+    address: "Hertzel!!!",
+  },
 });
 ```
 
 If the passed object adheres to the schema, then the method will not throw an error.
 
-### What happens the validation fails?
+### What happens if the validation fails?
 
 When an object fails to validate, the `validate` method will throw an error with a message explaining exactly how the validation failed, and what property caused the error.
 
@@ -88,8 +73,8 @@ Lets show an example with the schema above:
 schema.validate({
   /* ... */
   address: {
-    city: 42
-  }
+    city: 42,
+  },
   /* ... */
 });
 ```
@@ -110,8 +95,8 @@ So, lets say we want to make a field be required, here is how we do that:
 const schema = new Schema({
   name: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 ```
 
@@ -119,23 +104,6 @@ As you can see, its pretty straight forward.
 Instead of using the "short" field syntax, we use the "verbose" one, which means
 that instead of writing `name: String`, we provide an object that has a `type` property, and any additional options
 that the type we want to use supports, in this example we added `required`.
-
-### What happens if I make a mistake?
-
-Don't worry, one of the main goals of this library is to provide helpful error messages.
-Lets see an example. Lets provide an invalid option to the field of type "String" and see what happens.
-
-```js
-const schema = new Schema({
-  name: {
-    type: String,
-    banana: "banana?"
-  }
-});
-```
-
-In the example above, the `name` prop contains an invalid configuration option `banana`,
-Running this code will throw the error: `Unknown property "banana"`.
 
 ## Short vs verbose syntax
 
@@ -145,7 +113,7 @@ Here is an example of how we would use the "short" syntax to create a field that
 
 ```js
 const schema = new Schema({
-  name: String
+  name: String,
 });
 ```
 
@@ -156,8 +124,8 @@ The verbose version of the same "Field schema" would be:
 ```js
 const schema = new Schema({
   name: {
-    type: String
-  }
+    type: String,
+  },
 });
 ```
 
@@ -170,7 +138,7 @@ With the `Object` and `Array` types the short and verbose version will look like
 ```js
 // Short
 const schema = new Schema({
-  favoriteMovies: [String]
+  favoriteMovies: [String],
 });
 
 // Verbose
@@ -179,10 +147,10 @@ const schema = new Schema({
     type: Array,
     child: [
       {
-        type: String
-      }
-    ]
-  }
+        type: String,
+      },
+    ],
+  },
 });
 ```
 
@@ -193,8 +161,8 @@ const schema = new Schema({
 const schema = new Schema({
   address: {
     city: String,
-    street: String
-  }
+    street: String,
+  },
 });
 
 // Verbose
@@ -203,13 +171,13 @@ const schema = new Schema({
     type: Object,
     child: {
       city: {
-        type: String
+        type: String,
       },
       street: {
-        type: String
-      }
-    }
-  }
+        type: String,
+      },
+    },
+  },
 });
 ```
 
@@ -271,13 +239,13 @@ const customType = {
 
   validateSchema(schema) {
     /* ...  */
-  }
+  },
 };
 ```
 
 Yep, its that simple. Each property has a specific role. Here is an explanation of what each of them does.
 
-- `allowedProps` - An array that lists all the allowed properties in the type schema, excluding 'type', because its always required(we add it for you).
+- `allowedProps` - An array that lists all the allowed properties in the type schema, excluding 'type' and 'meta' which are reserved, and added automatically.
 - `validateType` - This method is the one that should contain the logic to allow or reject a value. It should return a Boolean, `true` if the value matches and `false` otherwise.
   The method will receive the value itself, and the schema options for the field.
 - `validateSchema` - This method is invoked when a schema class is instantiated, and it is used to check that the schema was written correctly and doesn't contain any invalid props or typos.
@@ -303,13 +271,13 @@ Schema.validators.set("customType", customTypeObject);
 // Now the user can use the type by typing:
 const schema = new Schema({
   username: {
-    type: "customType"
-  }
+    type: "customType",
+  },
 });
 
 // Or even the short way
 const schema = new Schema({
-  username: "customType"
+  username: "customType",
 });
 ```
 
@@ -323,13 +291,13 @@ An example:
 const schema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
-  age: Number
+  age: Number,
 });
 
 schema.validate({
-  age: ["This is not a number"]
+  age: ["This is not a number"],
 });
 ```
 
@@ -344,9 +312,9 @@ Map(2) {
 
 ## Add metadata that will be ignored by the `Schema` constructor.
 
-Sometimes when we might want to fields in a schema.
-For example, if we want to use the schema declaration for other uses, like passing it to a helper that creates forms.
-All type options that start with a double underscore("\_\_") will be ignored when creating a validator for the schema, however, they will not be allowed in the objects itself, nor as regular properties.
+Sometimes it is necessary to add metadata to the schema, for example, to use the schema declaration in other parts of our codebase, like passing it to a helper that creates forms.
+
+There is a global type option called "meta", it is valid on all types, even custom ones, and is reserved just for that.
 
 Code example:
 
@@ -355,29 +323,10 @@ const schema = new Schema({
   name: {
     type: String,
     required: true,
-    __formData: {
+    meta: {
       placeholder: "Please enter your full name...",
-      className: "form-control"
-    }
-  }
+      className: "form-control",
+    },
+  },
 });
 ```
-
-This type schema will be read by the `Schema` compiler as if it were:
-
-```js
-const schema = new Schema({
-	name: {
-		type: String,
-		required: true
-	}
-}
-```
-
-The validation step will be identical with both.
-
-## Can I contribute?
-
-Yes, feel free to help. I tried to document the code as much as possible, and make it as clean as possible, and it is very easy to extend with additional types.
-
-And if you have an issue or a feature request, just open an issue, I'll usually respond pretty fast.

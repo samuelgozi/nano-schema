@@ -7,8 +7,8 @@ describe('Schema Compiler', () => {
 		function testVerbose() {
 			schema.compileSchemaField({
 				name: {
-					type: 'whatever'
-				}
+					type: 'whatever',
+				},
 			});
 		}
 
@@ -24,29 +24,29 @@ describe('Schema Compiler', () => {
 		const schema = new Schema({});
 
 		expect(schema.compileSchemaField(String, 'propName')).toEqual({
-			type: String
+			type: String,
 		});
 
 		expect(schema.compileSchemaField(Number, 'propName')).toEqual({
-			type: Number
+			type: Number,
 		});
 
 		expect(schema.compileSchemaField(Boolean, 'propName')).toEqual({
-			type: Boolean
+			type: Boolean,
 		});
 
 		expect(schema.compileSchemaField(Date, 'propName')).toEqual({
-			type: Date
+			type: Date,
 		});
 
 		expect(schema.compileSchemaField(Array, 'propName')).toEqual({
 			type: Array,
-			child: []
+			child: [],
 		});
 
 		expect(schema.compileSchemaField(Object, 'propName')).toEqual({
 			type: Object,
-			child: {}
+			child: {},
 		});
 	});
 
@@ -57,18 +57,18 @@ describe('Schema Compiler', () => {
 			type: Array,
 			child: [
 				{
-					type: String
-				}
-			]
+					type: String,
+				},
+			],
 		});
 
 		expect(schema.compileSchemaField({ name: String }, 'propName')).toEqual({
 			type: Object,
 			child: {
 				name: {
-					type: String
-				}
-			}
+					type: String,
+				},
+			},
 		});
 	});
 
@@ -78,9 +78,9 @@ describe('Schema Compiler', () => {
 				type: Object,
 				required: true,
 				child: {
-					street: String
-				}
-			}
+					street: String,
+				},
+			},
 		});
 
 		const objectExpected = {
@@ -89,18 +89,18 @@ describe('Schema Compiler', () => {
 				required: true,
 				child: {
 					street: {
-						type: String
-					}
-				}
-			}
+						type: String,
+					},
+				},
+			},
 		};
 
 		const arraySchema = new Schema({
 			address: {
 				type: Array,
 				required: true,
-				child: [String]
-			}
+				child: [String],
+			},
 		});
 
 		const arrayExpected = {
@@ -109,10 +109,10 @@ describe('Schema Compiler', () => {
 				required: true,
 				child: [
 					{
-						type: String
-					}
-				]
-			}
+						type: String,
+					},
+				],
+			},
 		};
 
 		expect(objectSchema.__schema).toEqual(objectExpected);
@@ -125,7 +125,7 @@ describe('Schema Compiler', () => {
 		function testSyntax() {
 			schema.compileSchemaField(
 				{
-					name: 'Slim Shady'
+					name: 'Slim Shady',
 				},
 				'propName'
 			);
@@ -141,7 +141,7 @@ describe('Schema Compiler', () => {
 			schema.compileSchemaField(
 				{
 					type: String,
-					imNotWanted: 'but why?'
+					imNotWanted: 'but why?',
 				},
 				'test'
 			);
@@ -157,7 +157,7 @@ describe('Schema Compiler', () => {
 			schema.compileSchemaField(
 				{
 					type: String,
-					required: 'yes please!'
+					required: 'yes please!',
 				},
 				'test'
 			);
@@ -173,7 +173,7 @@ describe('Schema Compiler', () => {
 			schema.compileSchemaField(
 				{
 					type: String,
-					enum: 'this or that'
+					enum: 'this or that',
 				},
 				'test'
 			);
@@ -189,7 +189,7 @@ describe('Schema Compiler', () => {
 			schema.compileSchemaField(
 				{
 					type: String,
-					enum: [42]
+					enum: [42],
 				},
 				'test'
 			);
@@ -199,7 +199,7 @@ describe('Schema Compiler', () => {
 			schema.compileSchemaField(
 				{
 					type: Number,
-					enum: ['Forty two']
+					enum: ['Forty two'],
 				},
 				'test'
 			);
@@ -221,55 +221,55 @@ describe('Schema Compiler', () => {
 			favoriteStuff: [String],
 			contactInfo: {
 				address: String,
-				phone: Number
-			}
+				phone: Number,
+			},
 		};
 
 		expect(schema.compileSchema(shortSchema)).toEqual({
 			name: {
-				type: String
+				type: String,
 			},
 			favoriteStuff: {
 				type: Array,
 				child: [
 					{
-						type: String
-					}
-				]
+						type: String,
+					},
+				],
 			},
 			contactInfo: {
 				type: Object,
 				child: {
 					address: {
-						type: String
+						type: String,
 					},
 					phone: {
-						type: Number
-					}
-				}
-			}
+						type: Number,
+					},
+				},
+			},
 		});
 	});
 
-	test('compileSchema ignores type options starting with two underscores "__"', () => {
+	test('compileSchema ignores the "meta" field option for all types', () => {
 		const schema = new Schema({});
 		const shortSchema = {
 			name: {
 				type: String,
-				__meta: {
-					this: 'should be ignored'
-				}
+				meta: {
+					this: 'should be ignored',
+				},
 			},
 			contactInfo: {
 				address: String,
 				phone: {
 					type: Number,
-					__meta: {
+					meta: {
 						stuff: 'here',
-						should: 'be ignored'
-					}
-				}
-			}
+						should: 'be ignored',
+					},
+				},
+			},
 		};
 
 		expect(() => schema.compileSchema(shortSchema)).not.toThrow();
