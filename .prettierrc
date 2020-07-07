@@ -1,11 +1,6 @@
 {
-  "overrides": [
-    {
-      "files": "*.md",
-      "options": {
-        "useTabs": false,
-        "tabWidth": 2
-      }
-    }
-  ]
+	"singleQuote": true,
+	"useTabs": true,
+	"trailingComma": "none",
+	"arrowParens": "avoid"
 }

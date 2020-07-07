@@ -11,7 +11,7 @@ const validators = new Map([
 	[Boolean, booleanValidator],
 	[Date, dateValidator],
 	[Array, arrayValidator],
-	[Object, objectValidator],
+	[Object, objectValidator]
 ]);
 
 // Helper to check if a field is a plain Object.
@@ -65,7 +65,7 @@ class Schema {
 		if (Array.isArray(fieldSchema)) {
 			fieldSchema = {
 				type: Array,
-				child: fieldSchema,
+				child: fieldSchema
 			};
 		}
 
@@ -74,7 +74,7 @@ class Schema {
 		if (isObject(fieldSchema) && fieldSchema.type === undefined) {
 			fieldSchema = {
 				type: Object,
-				child: fieldSchema,
+				child: fieldSchema
 			};
 		}
 
@@ -201,7 +201,7 @@ class Schema {
 			if (!schema.enum.includes(value)) {
 				throw {
 					propPath,
-					message: `The field can only be one of: ${schema.enum.join(', ')}`,
+					message: `The field can only be one of: ${schema.enum.join(', ')}`
 				};
 			}
 
@@ -341,7 +341,7 @@ class Schema {
 			// If this is a recursive call, then we append the
 			// parent field name to the prop to make it easier to debug.
 			if (fieldParent !== undefined) {
-				invalidProps = invalidProps.map((prop) => fieldParent + '.' + prop);
+				invalidProps = invalidProps.map(prop => fieldParent + '.' + prop);
 			}
 
 			for (const prop of invalidProps) {

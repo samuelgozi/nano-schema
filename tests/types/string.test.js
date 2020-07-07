@@ -7,7 +7,7 @@ describe('Strings', () => {
 		expect(stringValidator.validateType('this is a string')).toEqual(true);
 
 		// Should fail
-		expect(stringValidator.validateType(function() {})).toEqual(false);
+		expect(stringValidator.validateType(function () {})).toEqual(false);
 		expect(stringValidator.validateType(undefined)).toEqual(false);
 		expect(stringValidator.validateType(null)).toEqual(false);
 		expect(stringValidator.validateType(true)).toEqual(false);

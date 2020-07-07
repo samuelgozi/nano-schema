@@ -6,7 +6,7 @@ test('Only booleans pass the "validateType" method', () => {
 	expect(booleanValidator.validateType(false)).toEqual(true);
 
 	// Should fail
-	expect(booleanValidator.validateType(function() {})).toEqual(false);
+	expect(booleanValidator.validateType(function () {})).toEqual(false);
 	expect(booleanValidator.validateType(undefined)).toEqual(false);
 	expect(booleanValidator.validateType(null)).toEqual(false);
 	expect(booleanValidator.validateType('str')).toEqual(false);
