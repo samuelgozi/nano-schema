@@ -5,7 +5,7 @@ test('Only objects pass the "validateType" method', () => {
 	expect(objectValidator.validateType({})).toEqual(true);
 
 	// Should fail
-	expect(objectValidator.validateType(function() {})).toEqual(false);
+	expect(objectValidator.validateType(function () {})).toEqual(false);
 	expect(objectValidator.validateType(undefined)).toEqual(false);
 	expect(objectValidator.validateType('str')).toEqual(false);
 	expect(objectValidator.validateType(true)).toEqual(false);

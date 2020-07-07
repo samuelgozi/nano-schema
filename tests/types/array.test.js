@@ -5,7 +5,7 @@ test('Only arrays pass the "validateType" method', () => {
 	expect(arrayValidator.validateType([])).toEqual(true);
 
 	// Should fail
-	expect(arrayValidator.validateType(function() {})).toEqual(false);
+	expect(arrayValidator.validateType(function () {})).toEqual(false);
 	expect(arrayValidator.validateType(undefined)).toEqual(false);
 	expect(arrayValidator.validateType('str')).toEqual(false);
 	expect(arrayValidator.validateType(true)).toEqual(false);
