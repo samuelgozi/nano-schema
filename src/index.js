@@ -19,7 +19,7 @@ function isObject(value) {
 	return Object.prototype.toString.apply(value) === '[object Object]';
 }
 
-// Default test when a field is is required.
+// Default test when a field is required.
 function isEmpty(value) {
 	return value === undefined || value === null;
 }
@@ -61,7 +61,7 @@ class Schema {
 		}
 
 		// Check if the value uses a short syntax for the
-		// Array schema, if it is then replace it with the verbose syntax.
+		// Array schema. If it is, replace it with the verbose syntax.
 		if (Array.isArray(fieldSchema)) {
 			fieldSchema = {
 				type: Array,
@@ -70,7 +70,7 @@ class Schema {
 		}
 
 		// If the field schema is an object and doesn't have a type
-		// property then its an object shortcut, replace is with verbose syntax.
+		// property then it's an object shortcut, replace is with verbose syntax.
 		if (isObject(fieldSchema) && fieldSchema.type === undefined) {
 			fieldSchema = {
 				type: Object,
@@ -157,7 +157,7 @@ class Schema {
 			const fieldPath =
 				parentField !== undefined ? parentField + '.' + fieldName : fieldName;
 
-			// Compile the field, and save it.
+			// Compile the field and save it.
 			// "compiling" is needed because a field might use a shortcut.
 			const compiledField = this.compileSchemaField(
 				schema[fieldName],
@@ -251,7 +251,7 @@ class Schema {
 			throw { propPath: propName, message: 'The field is required' };
 		}
 
-		// Map of the property names and its errors(if any).
+		// Map of the property names and its errors (if any).
 		const errors = new Map();
 
 		for (const index in array) {
@@ -277,7 +277,7 @@ class Schema {
 			// If the current property matched a valid schema, then move into the next prop.
 			if (propItemMatched) continue;
 
-			// If no validation worked(the function would've
+			// If no validation worked (the function would've
 			// returned, and never get here), Then add en error to the errors set.
 			throw errors.set(
 				propName + indexPropName,
@@ -287,7 +287,7 @@ class Schema {
 	}
 
 	/*
-	 * Validates an object and all of its fields against a schema.
+	 * Validates an object and all its fields against a schema.
 	 */
 	validate(object, schema = this.__schema, fieldParent, isRequired) {
 		let errors = new Map();
@@ -295,14 +295,14 @@ class Schema {
 		// Used to track which props were validated.
 		const objectProps = new Set(Object.keys(object));
 
-		// If the object is required(it means that
+		// If the object is required (it means that
 		// this is a recursive call, and the object type
 		// has required set to true), then throw if it is empty.
 		if (isRequired === true && objectProps.size === 0) {
 			throw Error(`The object "${fieldParent}" is required, but left empty`);
 		}
 
-		// Loop over the keys in the schema(not over the object to validate).
+		// Loop over the keys in the schema (not over the object to validate).
 		for (const fieldName in schema) {
 			const fieldValue = object[fieldName];
 			const fieldSchema = schema[fieldName];
