@@ -9,6 +9,14 @@ describe('Creating a schema', () => {
 		expect(createNewSchema).toThrow('Schema must be an object');
 	});
 
+	test('Instantiating a `new Schema` with a null argument, null types are not acceptable', () => {
+		function createNewSchema() {
+			new Schema(null);
+		}
+
+		expect(createNewSchema).toThrow('Schema must be an object');
+	});
+
 	test('Correct verbose syntax', () => {
 		const schemaObject = {
 			gender: {

@@ -27,7 +27,7 @@ function isEmpty(value) {
 class Schema {
 	constructor(schema) {
 		// Verify that the input is an Object.
-		if (typeof schema !== 'object') throw Error('Schema must be an object');
+		if (!isObject(schema)) throw Error('Schema must be an object');
 
 		// Validate that the schema is formatted correctly
 		// and compile shortcuts into the verbose syntax.
